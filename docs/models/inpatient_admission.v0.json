@@ -20,7 +20,6 @@
     {"type":"MUTEX","a":"discharged","b":"expired"},
     {"type":"MUTEX","a":"discharged","b":"transferred"},
     {"type":"MUTEX","a":"expired","b":"transferred"},
-
     {"type":"FORBID_WHEN","if_flag":"booked","when":{"admission_type":"Emergency"}},
     {"type":"FORBID_WHEN","if_flag":"in_icu","when":{"ward":"Medical"}},
     {"type":"FORBID_WHEN","if_flag":"in_icu","when":{"ward":"Surgical"}},
