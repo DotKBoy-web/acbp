@@ -1,4 +1,7 @@
 {
+  "$schema": "./docs/schema/v0/acbp.schema.json",
+  "$id": "https://dotkboy.github.io/acbp/models/clinic_visit.v0.json",
+  "dsl_version": "v0",
   "name": "inpatient_admission",
   "flags": ["booked","checked_in","in_icu","discharged","expired","transferred"],
   "categories": {

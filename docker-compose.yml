@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
 version: "3.8"
 services:
   db:

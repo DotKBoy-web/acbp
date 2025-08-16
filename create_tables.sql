@@ -1,3 +1,6 @@
+-- SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+-- Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 -- ===== CLINIC DATA =====
 DROP TABLE IF EXISTS clinic_visit_data CASCADE;
 CREATE TABLE clinic_visit_data (
@@ -17,7 +20,6 @@ CREATE TABLE clinic_visit_data (
   insurance     text   NOT NULL
 );
 
--- Optional: a couple of handy indexes
 CREATE INDEX IF NOT EXISTS idx_clinic_mrn ON clinic_visit_data(patient_mrn);
 CREATE INDEX IF NOT EXISTS idx_clinic_mask ON clinic_visit_data(mask);
 

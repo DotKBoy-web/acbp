@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://dotkboy.github.io/acbp/schema/v1/acbp.schema.json",
+  "$comment": "SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0 | Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)",
+  "title": "ACBP DSL v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "bits", "categories", "rules"],
+  "properties": {
+    "model": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "SQL-safe model name prefix (lower_snake_case)."
+    },
+    "bits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "index"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "index": { "type": "integer", "minimum": 0 },
+          "doc": { "type": "string" }
+        }
+      },
+      "description": "Boolean flags mapped to bit positions. Uniqueness of names/indices is enforced by compiler."
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "values"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "doc": { "type": "string" }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bit_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["forbid_when", "expr"],
+            "properties": {
+              "forbid_when": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "expr": { "$ref": "#/$defs/Expr" },
+              "doc": { "type": "string" }
+            }
+          }
+        },
+        "cat_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["expr"],
+            "properties": {
+              "expr": { "$ref": "#/$defs/Expr" },
+              "doc": { "type": "string" }
+            }
+          }
+        },
+        "implies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["when_bits", "require"],
+            "properties": {
+              "when_bits": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "require": { "$ref": "#/$defs/Expr" },
+              "doc": { "type": "string" }
+            }
+          }
+        },
+        "mutex_bits": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "items": { "type": "string" },
+            "description": "Two or more bits that cannot be enabled together."
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Comparator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eq":  { "type": ["string", "number", "boolean"] },
+        "neq": { "type": ["string", "number", "boolean"] },
+        "in":  { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "nin": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+      },
+      "minProperties": 1
+    },
+    "Expr": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/Comparator" },
+      "minProperties": 1,
+      "description": "Map of category_name -> comparator (eq/neq/in/nin)."
+    }
+  }
+}

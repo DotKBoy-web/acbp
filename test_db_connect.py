@@ -1,4 +1,6 @@
-# test_db_connect.py
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 from sqlalchemy import create_engine, text
 
 url = "postgresql+psycopg2://postgres:acbp@127.0.0.1:5434/postgres?sslmode=disable"

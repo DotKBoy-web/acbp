@@ -1,4 +1,7 @@
 {
+  "$schema": "./docs/schema/v0/acbp.schema.json",
+  "$id": "https://dotkboy.github.io/acbp/models/clinic_visit.v0.json",
+  "dsl_version": "v0",
   "name": "clinic_visit",
   "flags": [
     "booked",
@@ -27,7 +30,7 @@
     { "type": "MUTEX",   "a": "canceled",         "b": "rescheduled" },
     { "type": "MUTEX",   "a": "rescheduled",      "b": "checked_in" },
     { "type": "MUTEX",   "a": "rescheduled",      "b": "seen_by_doctor" }
-    
+
     ,
     {
       "type": "FORBID_IF_SQL",

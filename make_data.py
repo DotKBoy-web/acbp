@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
 #!/usr/bin/env python3
 import argparse, csv, random, math, os
 from typing import Dict, List, Tuple
@@ -30,7 +32,7 @@ INPATIENT_CATS = {
 
 # ---------- Demographics catalogs ----------
 DEM_SEX      = (["M", "F", "Other"], [0.49, 0.49, 0.02])
-DEM_LANGUAGE = (["EN", "AR"], [0.7, 0.3])   # keep aligned with any JSON category if you add one
+DEM_LANGUAGE = (["EN", "AR"], [0.7, 0.3])
 DEM_CITY     = (["Riyadh", "Jeddah", "Dammam", "Mecca", "Medina"], [0.32, 0.28, 0.18, 0.12, 0.10])
 
 # ---------- helpers ----------
@@ -64,7 +66,7 @@ def sample_clinic_row(rng: random.Random) -> Dict[str, str]:
         "visit_hour": w(w_hour), "weekday": w(w_day), "insurance": w(w_ins),
     }
 
-    # category realism & soft constraints
+
     if row["appt_type"] == "Teleconsult":
         row["modality"] = "Virtual"
     if row["modality"] == "Virtual" and row["appt_type"] not in ("FollowUp", "Teleconsult"):
@@ -76,7 +78,7 @@ def sample_clinic_row(rng: random.Random) -> Dict[str, str]:
     if row["site"] == "Annex" and row["department"] == "Cardiology":
         row["department"] = rng.choice(["General", "Orthopedics", "Imaging", "Pediatrics"])
 
-    # bit-stage
+
     stage = rng.choices(["canceled", "rescheduled", "booked_only", "checked_in", "seen"],
                         weights=[0.10, 0.12, 0.18, 0.25, 0.35], k=1)[0]
     bits = {f: 0 for f in CLINIC_FLAGS}
@@ -88,12 +90,12 @@ def sample_clinic_row(rng: random.Random) -> Dict[str, str]:
         bits["booked"] = 1
     elif stage == "checked_in":
         bits["checked_in"] = 1; bits["booked"] = 1
-    else:  # seen
+    else:
         bits["seen_by_doctor"] = 1; bits["checked_in"] = 1; bits["booked"] = 1
         if rng.random() < 0.6:
             row["visit_hour"] = rng.choice(["09:00", "10:00"])
 
-    # inject some invalids
+
     if rng.random() < 0.06:
         if rng.random() < 0.5:
             bits["checked_in"] = 1; bits["booked"] = 0
@@ -149,7 +151,7 @@ def sample_inpatient_row(rng: random.Random) -> Dict[str, str]:
         bits["booked"] = 1; bits["checked_in"] = 1; bits["discharged"] = 1
     elif stage == "expired":
         bits["booked"] = 1; bits["checked_in"] = 1; bits["expired"] = 1
-    else:  # transferred
+    else:
         bits["booked"] = 1; bits["checked_in"] = 1; bits["transferred"] = 1
         row["arrival_source"] = "OtherHospital"
 
@@ -193,7 +195,7 @@ def generate(model: str, n_rows: int, seed: int, out_prefix: str) -> Tuple[str, 
     rows: List[Dict[str, str]] = []
     for i in range(n_rows):
         r = sampler()
-        # Demographics (unique MRN per row; distribution for sex/language/city)
+
         r["patient_mrn"] = f"MRN{seed:03d}{i:09d}"
         r["sex"]         = wpick(rng, *DEM_SEX)
         r["language"]    = wpick(rng, *DEM_LANGUAGE)

@@ -1,3 +1,5 @@
+REM SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+REM Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
 @echo off
 setlocal
 REM adjust if you prefer secrets.toml instead

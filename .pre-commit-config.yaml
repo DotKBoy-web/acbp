@@ -1,0 +1,39 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: detect-private-key
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.33.2
+    hooks:
+
+      - id: check-jsonschema
+        name: Validate ACBP DSL JSONs (v0)
+        args: ["--schemafile", "docs/schema/v0/acbp.schema.json"]
+        types: [json]
+        files: >
+          (?x)^(
+            clinic_visit\.json|
+            inpatient_admission\.json|
+            .*\.acbp\.v0\.json
+          )$
+
+
+      - id: check-jsonschema
+        name: Validate ACBP DSL JSONs (v1)
+        args: ["--schemafile", "docs/schema/v1/acbp.schema.json"]
+        types: [json]
+        files: ".*\\.acbp\\.v1\\.json$"
+
+
+      - id: check-jsonschema
+        name: Validate ACBP schema (self-check)
+        args: ["--check-metaschema"]
+        files: "docs/schema/v1/acbp\\.schema\\.json$"

@@ -1,0 +1,11 @@
+<!-- SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0 -->
+<!-- Copyright (c) 2025 DotK (Muteb Hail S Al Anazi) -->
+
+This repository contains the ACBP DSL, compiler, example models, synthetic
+datasets, and a Streamlit benchmarking/explorer app.
+
+Unless otherwise stated in file headers, the software is provided under the
+<!-- SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0 -->
+<!-- Copyright (c) 2025 DotK (Muteb Hail S Al Anazi) -->
+(see LICENSE). Third-party components remain the property of
+their respective owners (see THIRD_PARTY_NOTICES.md).

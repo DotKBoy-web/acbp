@@ -1,4 +1,6 @@
-# acbp_app_demo.py
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 import json, os, time, glob, shutil, subprocess
 from typing import Dict, Optional, List
 import pandas as pd

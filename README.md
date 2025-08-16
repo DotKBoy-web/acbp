@@ -176,3 +176,10 @@ Top grouping error in UI:
 Matview drift (columns changed in DSL):
     ./acbp.sh rematerialize <model> (drops & rebuilds matviews)
 
+## License
+
+Source-available for **noncommercial, personal evaluation only** under
+**DotK Proprietary Noncommercial License v1.0**. Commercial or production
+use requires a paid license.
+Contact: `dotkboy@outlook.com`
+SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0

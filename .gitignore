@@ -6,9 +6,6 @@ __pycache__/
 *.pyd
 *.egg-info/
 
-# Streamlit
-.streamlit/secrets.toml
-
 # OS / editors
 .DS_Store
 Thumbs.db
@@ -18,4 +15,3 @@ Thumbs.db
 # Generated artifacts
 *_present_mat.csv
 _uploaded_*.json
-

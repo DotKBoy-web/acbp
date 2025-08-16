@@ -1,23 +1,6 @@
-#!/usr/bin/env python3
-# ACBP JSON → Postgres SQL generator (model-agnostic)
-# - Supports constraints: IMPLIES, EQUIV, MUTEX, ONEOF
-# - Category-aware runtime rules:
-#   * FORBID_WHEN: {"type":"FORBID_WHEN","when":{"cat":"val", ...},"if_flag":"flagname"}
-#   * FORBID_IF_SQL: {"type":"FORBID_IF_SQL","condition":"SQL using category param names","if_flag":"flagname"}
-# - Emits:
-#   * <model>_valid_masks view (bit-only rules)
-#   * <model>_categories view (cartesian)
-#   * <model>_decision_space view (= masks × cats)
-#   * <model>_explain view (bit-columns)
-#   * acbp_popcount()
-#   * acbp_is_valid__<model>(mask)             -- bit-only validator
-#   * acbp_explain_rules__<model>(mask)        -- bit-only explainer (rule, ok)
-#   * acbp_is_valid__<model>_cats(mask, cats)  -- cat-aware validator (if any cat rules)
-#   * acbp_explain__<model>(mask, cats)        -- cat-aware explainer (if any cat rules)
-#
-# Usage:
-#   py -m acbp_tester clinic_visit.json --enumerate -o clinic_visit.sql
-#
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 import argparse, json
 from typing import List, Dict, Set
 
@@ -33,12 +16,12 @@ def scc_equivalence(flags: List[str], constraints: List[dict]) -> List[Set[str]]
             a,b = c["a"], c["b"]; adj[a].add(b); adj[b].add(a)
         elif t == "IMPLIES":
             a,b = c["a"], c["b"]; implies.setdefault(a, set()).add(b)
-    # merge mutual implies as equivalence
+
     for a, bs in implies.items():
         for b in bs:
             if b in implies and a in implies[b]:
                 adj[a].add(b); adj[b].add(a)
-    # components
+
     seen=set(); comps=[]
     for f in flags:
         if f in seen: continue
@@ -89,7 +72,7 @@ def enumerate_valid_masks(model: dict) -> List[int]:
                 cnt = sum(bit(mask, pos[f]) for f in fset)
                 if cnt != 1: return False
             elif t in ("FORBID_WHEN","FORBID_IF_SQL"):
-                # runtime/category rules - not used to prune masks during enumeration
+
                 continue
         return True
 
@@ -113,7 +96,7 @@ def predicate_sql_for_bit_constraints(flags: List[str], constraints: List[dict])
             maskbits = sum((1 << pos[f]) for f in c["flags"])
             preds.append(f"(acbp_popcount(mask & {maskbits}) = 1)")
         elif t in ("FORBID_WHEN","FORBID_IF_SQL"):
-            # Category-aware: excluded from bit-only predicate
+
             pass
     return " AND\n    ".join(preds) if preds else "TRUE"
 
@@ -183,7 +166,7 @@ def cat_rule_preds(flags: List[str], categories: Dict[str, List[str]], constrain
             ok   = f"NOT ( ({condition}) AND ({_bit_expr(pos[flag])} = 1) )"
             preds.append(ok)
             unions.append(f"SELECT '{_sql_quote(rule)}'::text AS rule, ({ok})::boolean AS ok")
-        # ignore other types
+
     return preds, unions
 
 def emit_postgres_sql(model: dict) -> str:
@@ -195,7 +178,7 @@ def emit_postgres_sql(model: dict) -> str:
     pos        = bitpos_map(flags)
     max_mask   = (1 << B) - 1
 
-    # Assembly pieces
+
     header = "-- ACBP Postgres SQL for model: {name}\n-- Flags:\n".format(name=name)
     header += "\n".join([f"-- {f:>24s} : bit {pos[f]}" for f in flags]) + "\n"
 
@@ -250,7 +233,7 @@ def emit_postgres_sql(model: dict) -> str:
         f"FROM \"{name}_valid_masks\";\n"
     )
 
-    # Bit-only validator
+
     validator_fn = (
         f"\n-- === Validator (bit-only) for {name} ===\n"
         f"CREATE OR REPLACE FUNCTION \"acbp_is_valid__{name}\"(mask bigint)\n"
@@ -260,7 +243,7 @@ def emit_postgres_sql(model: dict) -> str:
         "$$;\n"
     )
 
-    # Bit-only explainer (rule, ok)
+
     bit_unions_sql = bit_explain_unions(flags, cons)
     explain_rules_fn = (
         f"\n-- === Bit-only explainer for {name} ===\n"
@@ -271,11 +254,11 @@ def emit_postgres_sql(model: dict) -> str:
         "$$;\n"
     )
 
-    # Category-aware (optional)
+
     cat_preds, cat_unions = cat_rule_preds(flags, cats, cons)
     have_cat_rules = len(cat_preds) > 0
 
-    # Build signature using category keys in order
+
     cat_keys = list(cats.keys())
     cat_sig  = ", ".join(f"{k} text" for k in cat_keys)
 

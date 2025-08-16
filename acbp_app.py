@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 import json
 import os
 import glob
@@ -12,6 +15,7 @@ from sqlalchemy.engine import Engine
 
 st.set_page_config(page_title="ACBP Bench & Explorer", layout="wide")
 st.title("ACBP Bench & Explorer")
+st.subheader("Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)")
 
 # ============================== Connection helpers ==============================
 

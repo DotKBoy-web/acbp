@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 #!/usr/bin/env bash
 set -euo pipefail
 PORT=${PORT:-5434}

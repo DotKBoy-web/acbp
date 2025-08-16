@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -9,7 +12,7 @@ USER=${USER:-postgres}
 PASS=${PASS:-acbp}
 PORT=${PORT:-5434}
 VOLUME=${VOLUME:-acbp-data}
-PY=${PY:-py}  # use 'python' if Windows doesn't have 'py'
+PY=${PY:-py}
 
 # ========= HELPERS =========
 psqlc()  { docker exec -i  "$CONTAINER" psql -v ON_ERROR_STOP=1 -U "$USER" -d "$DB" "$@"; }
@@ -31,7 +34,7 @@ up() {
     docker start "$CONTAINER" >/dev/null
   fi
   echo ">> waiting for DB ..."
-  # Retry until ready
+
   for i in {1..60}; do
     if docker exec "$CONTAINER" pg_isready -U "$USER" -d "$DB" >/dev/null 2>&1; then
       echo ">> DB is ready"
@@ -420,7 +423,7 @@ refresh-present() {
   run-sql "SELECT acbp_refresh_present('$model');"
 }
 
-# quick sanity checks for a model
+
 checks() {
   local model="${1:-clinic_visit}"
   echo ">> valid mask count ($model)"
@@ -431,7 +434,7 @@ checks() {
   run-sql "SELECT 7 AS mask, \"acbp_is_valid__${model}\"(7) AS is_valid;" || true
 }
 
-# bit-only rule explainer (mask)
+
 explain() {
   local model="${1:?usage: $0 explain <model_name> <mask>}"
   local mask="${2:?usage: $0 explain <model_name> <mask>}"
