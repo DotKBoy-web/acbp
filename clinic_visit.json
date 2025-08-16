@@ -1,5 +1,5 @@
 {
-  "$schema": "./docs/schema/v0/acbp.schema.json",
+  "$schema": "https://dotkboy.github.io/acbp/schema/v0/acbp.schema.json",
   "$id": "https://dotkboy.github.io/acbp/models/clinic_visit.v0.json",
   "dsl_version": "v0",
   "name": "clinic_visit",
