@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACBP – Schemas & Examples</title>
+  <meta name="description" content="ACBP DSL schemas and example models" />
+  <meta property="og:title" content="ACBP – Schemas & Examples" />
+  <meta property="og:description" content="Browse ACBP DSL schemas (v0, v1) and example models." />
+  <meta property="og:type" content="website" />
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --card: #111318;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --link: #8ab4f8;
+      --accent: #00d2ff;
+      --border: #23262d;
+      --code-bg: #0f1115;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+      --radius: 14px;
+      --pad: 18px;
+      --gap: 16px;
+      --maxw: 980px;
+      --ring: 0 0 0 2px rgba(0,210,255,0.45), 0 16px 48px rgba(0,210,255,0.08);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7fafc;
+        --card: #ffffff;
+        --text: #111827;
+        --muted: #4b5563;
+        --link: #2563eb;
+        --accent: #0ea5e9;
+        --border: #e5e7eb;
+        --code-bg: #f3f4f6;
+        --shadow: 0 10px 30px rgba(2,6,23,0.08);
+        --ring: 0 0 0 2px rgba(14,165,233,0.25), 0 16px 48px rgba(14,165,233,0.08);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(0,210,255,0.12), transparent 50%),
+        radial-gradient(900px 500px at 100% 0%, rgba(168,85,247,0.10), transparent 50%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 20%),
+        var(--bg);
+    }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: var(--maxw); margin: 40px auto 80px; padding: 0 18px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 20px;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 110px; height: 110px;
+      border-radius: 16px;
+      background:
+        radial-gradient(220px 120px at 50% 0%, rgba(0,210,255,0.15), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.06), transparent 45%),
+        var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--ring);
+      overflow: hidden;
+    }
+    .logo img {
+      max-width: 90%;
+      max-height: 90%;
+      display: block;
+    }
+    .title h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 34px);
+      letter-spacing: 0.2px;
+    }
+    .title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+    .caption {
+      margin-top: 6px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      opacity: 0.9;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--gap);
+      margin-top: 22px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .card {
+      grid-column: span 12;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+    .list { margin: 0; padding-left: 18px; }
+    .list li { margin: 6px 0; }
+
+    .codewrap {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 12px 12px 12px;
+      overflow: auto;
+    }
+    pre {
+      margin: 0;
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: var(--text);
+      white-space: pre;
+    }
+    .copybtn {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .copybtn:hover { box-shadow: var(--ring); }
+
+    @media (min-width: 840px) {
+      .card--split { grid-column: span 6; }
+    }
+
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="logo">
+        <!-- Your logo in docs/ACBP_Logo.png -->
+        <img src="ACBP_Logo.png" alt="ACBP logo" />
+      </div>
+      <div class="title">
+        <h1>ACBP – Schemas &amp; Examples</h1>
+        <p>Domain-specific language for bit flags + categorical decision spaces, with SQL generation.</p>
+        <div class="caption">ACBP</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card card--split">
+        <h2>Schemas</h2>
+        <ul class="list">
+          <li><a href="/acbp/schema/v0/acbp.schema.json">v0 schema</a></li>
+          <li><a href="/acbp/schema/v1/acbp.schema.json">v1 schema</a></li>
+        </ul>
+      </article>
+
+      <article class="card card--split">
+        <h2>Examples</h2>
+        <ul class="list">
+          <li><a href="/acbp/models/clinic_visit.v0.json">Clinic (v0)</a></li>
+          <li><a href="/acbp/models/inpatient_admission.v0.json">Inpatient (v0)</a></li>
+        </ul>
+      </article>
+
+      <article class="card" style="grid-column: span 12;">
+        <h2>VS Code hint (JSON schema mapping)</h2>
+        <div class="codewrap">
+          <button class="copybtn" data-copy="#snippet">Copy</button>
+          <pre id="snippet">{
+  "json.schemas": [
+    {
+      "fileMatch": ["*.v0.json", "clinic_visit.json", "inpatient_admission.json"],
+      "url": "https://dotkboy-web.github.io/acbp/schema/v0/acbp.schema.json"
+    },
+    {
+      "fileMatch": ["*.v1.json"],
+      "url": "https://dotkboy-web.github.io/acbp/schema/v1/acbp.schema.json"
+    }
+  ]
+}</pre>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <div>© 2025 DotK. Some rights reserved.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const btn = document.querySelector('.copybtn');
+      if (!btn) return;
+      btn.addEventListener('click', async () => {
+        const sel = btn.getAttribute('data-copy');
+        const el = document.querySelector(sel);
+        if (!el) return;
+        try {
+          await navigator.clipboard.writeText(el.textContent);
+          const old = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => (btn.textContent = old), 1200);
+        } catch (e) {
+          // fallback
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const selObj = window.getSelection();
+          selObj.removeAllRanges();
+          selObj.addRange(range);
+          document.execCommand('copy');
+          selObj.removeAllRanges();
+          const old = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => (btn.textContent = old), 1200);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
