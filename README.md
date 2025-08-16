@@ -1,3 +1,5 @@
+> See also: **[The ACBP Equation](docs/ACBP-Equation.md)** — canonical definition & compiler contract.
+
 # ACBP — Bitmask DSL, Benchmarks & Explorer
 A tiny domain-specific language (DSL) for composing And/Constraint/Bitmask/Policy models, plus a Postgres toolkit and a Streamlit app for exploration and benchmarking.
 
@@ -183,3 +185,5 @@ Source-available for **noncommercial, personal evaluation only** under
 use requires a paid license.
 Contact: `dotkboy@outlook.com`
 SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16888028.svg)](https://doi.org/10.5281/zenodo.16888028)
