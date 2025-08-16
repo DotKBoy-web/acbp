@@ -10,6 +10,7 @@
 *.yml       text eol=lf
 *.yaml      text eol=lf
 *.cmd       text eol=lf
+*.cff  text eol=lf
 docs/.nojekyll text eol=lf
 
 # Treat CSV as text (no filters)
