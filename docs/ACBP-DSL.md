@@ -1,3 +1,9 @@
+---
+layout: page
+title: "ACBP DSL: specification"
+permalink: /docs/ACBP-DSL.html
+---
+
 # ACBP DSL (Domain-Specific Language) — Specification
 
 ## Goals

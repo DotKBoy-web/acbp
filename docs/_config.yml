@@ -1,14 +1,6 @@
-title: ACBP
-description: Schemas, examples, and editor hints
-theme: jekyll-theme-cayman
-
-# IMPORTANT for project pages:
-url: https://dotkboy-web.github.io
-baseurl: /acbp
-
-# (optional) helps relative links
-plugins:
-  - jekyll-relative-links
-relative_links:
-  enabled: true
-  collections: true
+baseurl: "/acbp"
+title: "ACBP"
+theme: minima
+markdown: kramdown
+kramdown:
+  input: GFM
