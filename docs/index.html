@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ACBP – Schemas & Examples</title>
+  <title>ACBP — DSL, Equation, Schemas & Examples</title>
 
-  <!-- Favicon (provide both if you can; fallback included) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/acbp/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/acbp/favicon-16.png">
-  <link rel="icon" href="/acbp/ACBP_Logo.png"> <!-- fallback -->
+  <link rel="icon" href="/acbp/ACBP_Logo.png">
 
   <!-- Open Graph / Twitter -->
-  <meta property="og:title" content="ACBP – Schemas & Examples">
-  <meta property="og:description" content="Specs, JSON Schemas, and example models for the ACBP DSL.">
+  <meta property="og:title" content="ACBP — DSL, Equation, Schemas & Examples">
+  <meta property="og:description" content="Spec, ACBP Equation, JSON Schemas, and example models for the ACBP DSL (SQL-native).">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://dotkboy-web.github.io/acbp/">
   <meta property="og:image" content="https://dotkboy-web.github.io/acbp/ACBP_Logo.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ACBP – Schemas & Examples">
-  <meta name="twitter:description" content="Specs, JSON Schemas, and example models for the ACBP DSL.">
+  <meta name="twitter:title" content="ACBP — DSL, Equation, Schemas & Examples">
+  <meta name="twitter:description" content="Spec, ACBP Equation, JSON Schemas, and example models for the ACBP DSL (SQL-native).">
   <meta name="twitter:image" content="https://dotkboy-web.github.io/acbp/ACBP_Logo.png">
   <link rel="canonical" href="https://dotkboy-web.github.io/acbp/">
 
@@ -34,20 +34,28 @@
       --btn: #1a2230;
       --btn-h: #212b3a;
       --code-bg: #0e141b;
+      --chip: #0f1620;
     }
     * { box-sizing: border-box; }
     html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .wrap { max-width: 920px; margin: 40px auto; padding: 0 20px; }
-    .hero {
-      display:flex; align-items:center; gap:18px; margin-bottom: 20px;
-    }
-    .hero img {
-      width: 56px; height: 56px; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(93,209,155,.25));
-    }
+    .wrap { max-width: 980px; margin: 40px auto; padding: 0 20px; }
+    .hero { display:flex; align-items:center; gap:18px; margin-bottom: 20px; }
+    .hero img { width: 56px; height: 56px; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(93,209,155,.25)); }
     h1 { font-size: 28px; letter-spacing:.2px; margin: 0; }
-    p.lead { color: var(--muted); margin:.25rem 0 1.25rem; }
+    p.lead { color: var(--muted); margin:.25rem 0 1.0rem; }
+
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 14px; }
+    .btn {
+      display:inline-flex; align-items:center; gap:8px; background: var(--btn);
+      border:1px solid var(--border); color:var(--text); border-radius: 10px;
+      padding: 8px 12px; text-decoration:none; font-weight:600;
+    }
+    .btn:hover { background: var(--btn-h); text-decoration:none; }
+
+    .badges { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 2px 0 14px; }
+    .chip { background: var(--chip); border:1px solid var(--border); border-radius: 999px; padding: 6px 10px; color: var(--muted); font-size: 13px; }
 
     .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-block: 20px 28px; }
     .card { background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
@@ -60,7 +68,7 @@
       background: var(--code-bg);
       border:1px solid var(--border);
       border-radius: 12px;
-      padding: 14px 14px 14px 14px;
+      padding: 14px;
       overflow:auto;
       margin:0;
     }
@@ -93,7 +101,33 @@
       <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
       <div>
         <h1>ACBP</h1>
-        <p class="lead">Schemas, examples, and editor hints for the ACBP DSL.</p>
+        <p class="lead">SQL-native decision rules. Schemas, examples, the ACBP Equation, and editor hints.</p>
+
+        <div class="actions" aria-label="Primary actions">
+          <a class="btn" href="https://github.com/DotKBoy-web/acbp/releases/latest" target="_blank" rel="noopener">
+            <!-- download icon -->
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M7.25 1.5a.75.75 0 0 1 1.5 0v6.19l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3A.75.75 0 1 1 5.53 5.97L7.25 7.7V1.5Z"></path><path d="M3 10.5a.75.75 0 0 1 .75.75v1A1.75 1.75 0 0 0 5.5 14h5a1.75 1.75 0 0 0 1.75-1.75v-1a.75.75 0 0 1 1.5 0v1A3.25 3.25 0 0 1 10.5 16h-5A3.25 3.25 0 0 1 2.25 12.25v-1A.75.75 0 0 1 3 10.5Z"></path></svg>
+            Latest release
+          </a>
+          <a class="btn" href="https://github.com/DotKBoy-web/acbp" target="_blank" rel="noopener">
+            <!-- GH mark -->
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59.55.38 0 0 0 .55-.38c0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.2 1.87.86 2.33.65.07-.52.28-.86.51-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            GitHub
+          </a>
+        </div>
+
+        <div class="badges" aria-label="Archive badges">
+          <!-- Replace AFTER Zenodo mints DOIs -->
+          <!-- Concept DOI badge (stable): replace ZENODO_CONCEPT with your concept id -->
+          <a href="https://doi.org/10.5281/zenodo.ZENODO_CONCEPT" target="_blank" rel="noopener">
+            <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.ZENODO_CONCEPT.svg" alt="DOI concept badge">
+          </a>
+          <!-- Optional: Software Heritage SWHID link (replace HASH) -->
+          <a class="chip" href="https://archive.softwareheritage.org/swh:1:rev/HASH/" target="_blank" rel="noopener" title="Software Heritage archive permalink">
+            SWHID: swh:1:rev:HASH
+          </a>
+          <span class="chip" aria-label="Last updated">Updated: 2025-08-17 (Asia/Riyadh)</span>
+        </div>
       </div>
     </header>
 
@@ -103,32 +137,40 @@
         <ul>
           <li><a href="/acbp/schema/v0/acbp.schema.json">v0 schema</a></li>
           <li><a href="/acbp/schema/v1/acbp.schema.json">v1 schema</a></li>
+          <li><a href="/acbp/docs/schema/v1-patches/acbp.schema.patch.json">v1 patch: time windows & guardrail</a></li>
         </ul>
       </div>
+
       <div class="card">
         <h2>Examples</h2>
         <ul>
           <li><a href="/acbp/models/clinic_visit.v0.json">Clinic (v0)</a></li>
           <li><a href="/acbp/models/inpatient_admission.v0.json">Inpatient (v0)</a></li>
+          <!-- If your Pages publishes /examples, this will work; otherwise the raw link is a safe fallback -->
+          <li>
+            Clinic (v0 example file):
+            <a href="/acbp/examples/clinic_visit_v1.json">/examples/clinic_visit_v1.json</a>
+            <span class="sep">·</span>
+            <a href="https://raw.githubusercontent.com/DotKBoy-web/acbp/master/examples/clinic_visit_v1.json" target="_blank" rel="noopener">raw</a>
+          </li>
         </ul>
       </div>
+
       <div class="card">
         <h2>Docs</h2>
         <ul>
           <li><a href="/acbp/docs/ACBP-DSL.html">ACBP DSL: specification</a></li>
+          <li><a href="/acbp/docs/ACBP-Equation.md">The ACBP Equation (canonical)</a></li>
         </ul>
       </div>
     </section>
 
     <section class="card" aria-label="VS Code configuration">
-      <h2>VS Code – JSON schema hint</h2>
-      <p class="lead">Add this to your project’s <code>.vscode/settings.json</code> to enable live validation and completion.</p>
+      <h2>VS Code — JSON schema hint</h2>
+      <p class="lead">Add this to <code>.vscode/settings.json</code> for live validation & completion.</p>
       <div class="codewrap">
-        <button class="copy" id="copyBtn"
-                aria-label="Copy VS Code JSON schema configuration to clipboard">
-          Copy
-        </button>
-        <pre><code id="cfg">{
+        <button class="copy" id="copyBtn" aria-label="Copy VS Code JSON schema configuration to clipboard">Copy</button>
+<pre><code id="cfg">{
   "json.schemas": [
     {
       "fileMatch": ["*.v0.json","clinic_visit.json","inpatient_admission.json"],
@@ -144,17 +186,8 @@
     </section>
 
     <footer role="contentinfo">
-      <a class="gh" href="https://github.com/DotKBoy-web/acbp" target="_blank" rel="noopener">
-        <!-- tiny GH mark (inline) -->
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
-          0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-          -.01-.53.63-.01 1.08.58 1.23.82.72 1.2 1.87.86 2.33.65.07-.52.28-.86.51-1.06-1.78-.2
-          -3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82
-          .64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11
-          .51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19
-          0 .21.15.46.55.38A8.01 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
-        </svg>
+      <a class="gh" href="https://github.com/DotKBoy-web/acbp" target="_blank" rel="noopener" aria-label="View repository on GitHub">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.2 1.87.86 2.33.65.07-.52.28-.86.51-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
         View on GitHub
       </a>
       <span class="sep">•</span>
