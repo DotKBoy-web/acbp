@@ -15,3 +15,4 @@ Thumbs.db
 # Generated artifacts
 *_present_mat.csv
 _uploaded_*.json
+.streamlit/secrets.toml
