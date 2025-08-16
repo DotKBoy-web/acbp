@@ -1,0 +1,15 @@
+name: archive
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Emit tag metadata
+        run: |
+          echo "Tag: $GITHUB_REF_NAME"
+          echo "Repo: $GITHUB_REPOSITORY"
+          echo "UTC: $(date -u +%FT%TZ)"

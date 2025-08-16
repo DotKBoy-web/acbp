@@ -1,0 +1,16 @@
+{
+  "model": "clinic_visit",
+  "bits": ["booked", "checked_in", "canceled", "virtual"],
+  "cats": [
+    { "name": "site",       "values": ["Main", "ClinicA"] },
+    { "name": "department", "values": ["OPD", "Pediatrics"] },
+    { "name": "modality",   "values": ["InPerson", "Virtual"] },
+    { "name": "weekday",    "values": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] },
+    { "name": "visit_hour", "values": ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] }
+  ],
+  "rules": [
+    { "type": "IMPLIES", "a": "checked_in", "b": "booked", "explain": "cannot check in without booking" },
+    { "type": "MUTEX",   "a": "checked_in", "b": "canceled", "explain": "incompatible states" },
+    { "type": "FORBID_WHEN", "if_flag": "checked_in", "when": { "modality": "Virtual" }, "explain": "no physical check-in for virtual visits" }
+  ]
+}
