@@ -4,6 +4,8 @@ title: "ACBP DSL: specification"
 permalink: /docs/ACBP-DSL.html
 ---
 
+> See also: **[The ACBP Equation](docs/ACBP-Equation.md)** — canonical definition & compiler contract.
+
 # ACBP DSL (Domain-Specific Language) — Specification
 
 ## Goals
