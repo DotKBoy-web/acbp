@@ -1,0 +1,13 @@
+group_obj,visits
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Thu"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",51
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Fri"", ""age_group"": ""Adult"", ""admit_hour"": ""08:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",50
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Tue"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",49
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Sun"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",48
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Thu"", ""age_group"": ""Adult"", ""admit_hour"": ""08:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",45
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Thu"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",45
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",45
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",44
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Fri"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",43
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Fri"", ""age_group"": ""Adult"", ""admit_hour"": ""16:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",42
+"{""site"": ""Main"", ""ward"": ""Medical"", ""payer"": ""Private"", ""weekday"": ""Tue"", ""age_group"": ""Adult"", ""admit_hour"": ""08:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",42
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Sun"", ""age_group"": ""Adult"", ""admit_hour"": ""08:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",42

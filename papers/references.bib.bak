@@ -1,0 +1,131 @@
+@misc{dmn15,
+  title        = {Decision Model and Notation (DMN) Specification},
+  organization = {Object Management Group (OMG)},
+  year         = {2019},
+  howpublished = {\url{https://www.omg.org/spec/DMN/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{opa,
+  title        = {Open Policy Agent (OPA) and Rego},
+  organization = {CNCF / The Linux Foundation},
+  year         = {2024},
+  howpublished = {\url{https://www.openpolicyagent.org/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@article{benavides2010featuremodels,
+  author  = {Benavides, David and Segura, Sergio and Ruiz-Cort{\'e}s, Antonio},
+  title   = {Automated Analysis of Feature Models 20 Years Later: A Literature Review},
+  journal = {Information Systems},
+  year    = {2010},
+  volume  = {35},
+  number  = {6},
+  pages   = {615--636},
+  doi     = {10.1016/j.is.2010.01.001}
+}
+
+@misc{postgres16-docs,
+  title        = {PostgreSQL 16 Official Documentation},
+  organization = {The PostgreSQL Global Development Group},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{postgres-matviews,
+  title        = {Materialized Views},
+  organization = {PostgreSQL Documentation 16},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/rules-materializedviews.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{postgres-explain,
+  title        = {Using EXPLAIN},
+  organization = {PostgreSQL Documentation 16},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/using-explain.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{postgres-pgprewarm,
+  title        = {pg\_prewarm},
+  organization = {PostgreSQL Documentation 16},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/pgprewarm.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{postgres-notify,
+  title        = {LISTEN and NOTIFY},
+  organization = {PostgreSQL Documentation 16},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/sql-notify.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{postgres-bitstring,
+  title        = {Bit String Types and Bitwise Operators},
+  organization = {PostgreSQL Documentation 16},
+  year         = {2023},
+  howpublished = {\url{https://www.postgresql.org/docs/16/functions-bitstring.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{sqlalchemy,
+  title        = {SQLAlchemy Documentation},
+  organization = {SQLAlchemy},
+  year         = {2025},
+  howpublished = {\url{https://docs.sqlalchemy.org/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{docker,
+  title        = {Docker Engine Overview},
+  organization = {Docker, Inc.},
+  year         = {2025},
+  howpublished = {\url{https://docs.docker.com/engine/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{pandoc,
+  author       = {MacFarlane, John},
+  title        = {Pandoc User’s Guide},
+  year         = {2025},
+  howpublished = {\url{https://pandoc.org/MANUAL.html}},
+  note         = {Accessed 2025-08-17}
+}
+
+@misc{xetex,
+  author       = {Kew, Jonathan},
+  title        = {The \XeTeX{} Typesetting System},
+  year         = {2020},
+  howpublished = {\url{https://tug.org/xetex/}},
+  note         = {Accessed 2025-08-17}
+}
+
+@book{sat-handbook,
+  title     = {Handbook of Satisfiability},
+  editor    = {Biere, Armin and Heule, Marijn J. H. and van Maaren, Hans and Walsh, Toby},
+  publisher = {IOS Press},
+  series    = {Frontiers in Artificial Intelligence and Applications},
+  year      = {2009},
+  isbn      = {978-1-58603-929-5}
+}
+
+@misc{acbp-zenodo,
+  author = {Al Anazi, Muteb Hail S.},
+  title  = {ACBP: A SQL-Native Categorical-Boolean DSL (software artifact)},
+  year   = {2025},
+  doi    = {10.5281/zenodo.16888028},
+  howpublished = {\url{https://doi.org/10.5281/zenodo.16888028}}
+}
+
+@misc{acbp-github,
+  author       = {Al Anazi, Muteb Hail S.},
+  title        = {ACBP GitHub Repository},
+  year         = {2025},
+  howpublished = {\url{https://github.com/DotKBoy-web/acbp}},
+  note         = {Commit/tag referenced in paper}
+}

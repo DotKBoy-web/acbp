@@ -107,64 +107,75 @@ def sample_clinic_row(rng: random.Random) -> Dict[str, str]:
 
 # ---------- INPATIENT sampling ----------
 def sample_inpatient_row(rng: random.Random) -> Dict[str, str]:
-    w_adm = {"Elective": 0.35, "Emergency": 0.42, "Transfer": 0.15, "Maternity": 0.08}
-    w_site = {"Main": 0.55, "Annex": 0.25, "Downtown": 0.20}
-    w_age  = {"Peds": 0.15, "Adult": 0.65, "Geriatric": 0.20}
-    w_ward = {"Med": 0.34, "Surg": 0.24, "ICU": 0.16, "PICU": 0.06, "Onc": 0.20}
-    w_pay  = {"SelfPay": 0.10, "Private": 0.55, "Government": 0.35}
-    w_src  = {"ER": 0.55, "Clinic": 0.30, "OtherHospital": 0.15}
-    w_hr   = {"06:00": 0.18, "09:00": 0.34, "12:00": 0.30, "18:00": 0.18}
-    w_day  = {"Mon": 0.2, "Tue": 0.2, "Wed": 0.2, "Thu": 0.2, "Fri": 0.2}
+    # catalogs aligned with the JSON model
+    w_adm = {"Elective": 0.45, "Emergency": 0.25, "Transfer": 0.30}
+    w_site = {"Main": 0.65, "Annex": 0.35}
+    w_age  = {"Adult": 0.75, "Peds": 0.25}
+    w_ward = {"Medical": 0.40, "Surgical": 0.28, "ICU": 0.20, "StepDown": 0.12}
+    w_pay  = {"SelfPay": 0.10, "Private": 0.55, "Public": 0.35}
+    w_src  = {"ED": 0.55, "Clinic": 0.25, "Transfer": 0.10, "Direct": 0.10}
+    w_hr   = {"00:00": 0.12, "04:00": 0.10, "08:00": 0.24, "12:00": 0.24, "16:00": 0.18, "20:00": 0.12}
+    w_day  = {"Mon": 1/7, "Tue": 1/7, "Wed": 1/7, "Thu": 1/7, "Fri": 1/7, "Sat": 1/7, "Sun": 1/7}
 
-    def w(d): return random.choices(list(d.keys()), weights=list(d.values()), k=1)[0]
+    def w(d): return rng.choices(list(d.keys()), weights=list(d.values()), k=1)[0]
 
     row = {
-        "admission_type": w(w_adm), "site": w(w_site), "age_group": w(w_age),
-        "ward": w(w_ward), "payer": w(w_pay), "arrival_source": w(w_src),
-        "admit_hour": w(w_hr), "weekday": w(w_day),
+        "admission_type": w(w_adm),
+        "site":           w(w_site),
+        "age_group":      w(w_age),
+        "ward":           w(w_ward),
+        "payer":          w(w_pay),
+        "arrival_source": w(w_src),
+        "admit_hour":     w(w_hr),
+        "weekday":        w(w_day),
     }
 
-    if row["admission_type"] == "Elective":
-        if row["arrival_source"] == "ER":
-            row["arrival_source"] = random.choice(["Clinic", "OtherHospital"])
-        if row["admit_hour"] in ("06:00", "18:00"):
-            row["admit_hour"] = random.choice(["09:00", "12:00"])
-    if row["ward"] == "PICU" and row["site"] != "Main":
-        row["site"] = "Main"
-    if row["admission_type"] == "Maternity":
-        row["age_group"] = "Adult"
-
-    stage = random.choices(["booked_only", "checked_in", "icu", "discharged", "expired", "transferred"],
-                           weights=[0.12, 0.34, 0.15, 0.24, 0.05, 0.10], k=1)[0]
+    # stages; include an "unbooked" case so Emergency can be valid without booked/checked_in
+    stage = rng.choices(
+        ["unbooked", "booked_only", "checked_in", "icu", "discharged", "expired", "transferred"],
+        weights=[0.08,        0.14,          0.32,   0.12,      0.22,     0.04,        0.08],
+        k=1
+    )[0]
 
     bits = {f: 0 for f in INPATIENT_FLAGS}
-    if stage == "booked_only":
+
+    if stage == "unbooked":
+        pass  # mask stays 0 (valid)
+    elif stage == "booked_only":
         bits["booked"] = 1
     elif stage == "checked_in":
         bits["booked"] = 1; bits["checked_in"] = 1
     elif stage == "icu":
         bits["booked"] = 1; bits["checked_in"] = 1; bits["in_icu"] = 1
-        if row["ward"] not in ("ICU", "PICU"):
-            row["ward"] = random.choice(["ICU", "PICU"])
-            if row["ward"] == "PICU": row["site"] = "Main"
+        row["ward"] = "ICU"  # keep ICU ward with ICU flag
     elif stage == "discharged":
         bits["booked"] = 1; bits["checked_in"] = 1; bits["discharged"] = 1
     elif stage == "expired":
         bits["booked"] = 1; bits["checked_in"] = 1; bits["expired"] = 1
-    else:
+    else:  # transferred
         bits["booked"] = 1; bits["checked_in"] = 1; bits["transferred"] = 1
-        row["arrival_source"] = "OtherHospital"
+        row["arrival_source"] = "Transfer"
 
-    if random.random() < 0.05:
-        c = random.choice(["discharged_without_checked_in", "icu_wrong_ward", "transfer_wrong_source"])
-        if c == "discharged_without_checked_in":
-            bits["discharged"] = 1; bits["checked_in"] = 0; bits["booked"] = random.choice([0,1])
-        elif c == "icu_wrong_ward":
-            bits["in_icu"] = 1; bits["checked_in"] = 1; bits["booked"] = 1
-            row["ward"] = random.choice(["Med", "Surg", "Onc"])
+    # Enforce the model rule: FORBID_WHEN(booked when admission_type='Emergency').
+    # If we accidentally set booked/checked_in for Emergency, mostly flip the category to keep rows valid.
+    if row["admission_type"] == "Emergency" and (bits["booked"] or bits["checked_in"]):
+        if rng.random() < 0.85:
+            row["admission_type"] = rng.choice(["Elective", "Transfer"])
         else:
-            bits["transferred"] = 1; bits["checked_in"] = 1; bits["booked"] = 1
-            row["arrival_source"] = random.choice(["ER", "Clinic"])
+            # keep Emergency but make it valid by clearing flags (unbooked)
+            bits = {f: 0 for f in INPATIENT_FLAGS}
+
+    # small fraction of deliberately inconsistent cases to exercise validators
+    if rng.random() < 0.05:
+        bad = rng.choice(["icu_wrong_ward", "discharged_without_checked_in", "discharged_with_transfer_source"])
+        if bad == "icu_wrong_ward":
+            bits["booked"] = 1; bits["checked_in"] = 1; bits["in_icu"] = 1
+            row["ward"] = rng.choice(["Medical", "Surgical", "StepDown"])  # violates FORBID_WHEN(in_icu,...)
+        elif bad == "discharged_without_checked_in":
+            bits["discharged"] = 1; bits["checked_in"] = 0; bits["booked"] = rng.choice([0, 1])  # violates IMPLIES
+        else:  # discharged_with_transfer_source
+            bits["booked"] = 1; bits["checked_in"] = 1; bits["discharged"] = 1
+            row["arrival_source"] = "Transfer"  # violates FORBID_WHEN(discharged when arrival_source='Transfer')
 
     row["mask"] = str(pack_mask(bits, INPATIENT_FLAGS))
     return row

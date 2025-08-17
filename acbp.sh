@@ -10,7 +10,7 @@ IMAGE=${IMAGE:-postgres:16-alpine}
 DB=${DB:-postgres}
 USER=${USER:-postgres}
 PASS=${PASS:-acbp}
-PORT=${PORT:-5434}
+PORT=${PORT:-5434}          # host port (maps to 5432 in container)
 VOLUME=${VOLUME:-acbp-data}
 PY=${PY:-py}
 
@@ -26,7 +26,7 @@ up() {
     docker run --name "$CONTAINER" \
       -e POSTGRES_PASSWORD="$PASS" \
       -e POSTGRES_DB="$DB" \
-      -p "$PORT:5434" \
+      -p "$PORT:5432" \
       -v "$VOLUME:/var/lib/postgresql/data" \
       -d "$IMAGE" >/dev/null
   else
@@ -282,6 +282,9 @@ BEGIN
   ELSE
     EXECUTE format('CREATE UNIQUE INDEX IF NOT EXISTS %s ON %s(mask)', idx, pm);
   END IF;
+
+  -- Gather stats once so the dashboard queries plan well
+  EXECUTE format('ANALYZE %s', pm);
 END$$;
 
 CREATE OR REPLACE FUNCTION acbp_refresh_present(model text)
@@ -364,6 +367,59 @@ BEGIN
   EXECUTE format('CREATE INDEX IF NOT EXISTS %I ON %I (mask, %s)', idxname, data_table, cols);
   RETURN idxname;
 END$$;
+
+-- Run an arbitrary SELECT query N times and return the average wall time in ms.
+-- NOTE: results are discarded; the full query still executes in the server.
+CREATE OR REPLACE FUNCTION acbp_time_ms(q text, iters int DEFAULT 1, warmup boolean DEFAULT false)
+RETURNS double precision
+LANGUAGE plpgsql AS $$
+DECLARE
+  i int;
+  t1 timestamp;
+  t2 timestamp;
+  acc double precision := 0;
+BEGIN
+  IF warmup THEN
+    EXECUTE q; -- one warmup run (ignored)
+  END IF;
+
+  IF iters < 1 THEN
+    RETURN 0;
+  END IF;
+
+  FOR i IN 1..iters LOOP
+    t1 := clock_timestamp();
+    EXECUTE q; -- discard results
+    t2 := clock_timestamp();
+    acc := acc + EXTRACT(EPOCH FROM (t2 - t1)) * 1000.0;
+  END LOOP;
+  RETURN acc / iters;
+END$$;
+-- explicit cache heater (no-op if already there)
+CREATE EXTENSION IF NOT EXISTS pg_prewarm;
+
+-- time many queries in a single backend session
+CREATE OR REPLACE FUNCTION acbp_time_ms_many(
+  labels  text[],
+  queries text[],
+  iters   int    DEFAULT 1,
+  warmup  boolean DEFAULT false
+) RETURNS TABLE(label text, ms double precision)
+LANGUAGE plpgsql AS $$
+DECLARE i int;
+BEGIN
+  IF coalesce(array_length(labels,1),0) <> coalesce(array_length(queries,1),0) THEN
+    RAISE EXCEPTION 'labels and queries must be same length';
+  END IF;
+  IF warmup THEN
+    FOR i IN 1..coalesce(array_length(queries,1),0) LOOP
+      PERFORM acbp_time_ms(queries[i], 1, false);  -- one warmup run per query
+    END LOOP;
+  END IF;
+  FOR i IN 1..coalesce(array_length(queries,1),0) LOOP
+    RETURN QUERY SELECT labels[i], acbp_time_ms(queries[i], iters, false);
+  END LOOP;
+END$$;
 SQL
   echo ">> DB utility functions installed (materialize/refresh/bench + present-only)"
 }
@@ -380,6 +436,7 @@ DROP FUNCTION IF EXISTS acbp_bench_valid_join(text,text,boolean);
 DROP FUNCTION IF EXISTS acbp_refresh(text);
 DROP FUNCTION IF EXISTS acbp_materialize(text,boolean);
 DROP FUNCTION IF EXISTS acbp_materialize(text);
+DROP FUNCTION IF EXISTS acbp_time_ms(text,int,boolean);
 SQL
   install-db-utils
 }
@@ -423,7 +480,6 @@ refresh-present() {
   run-sql "SELECT acbp_refresh_present('$model');"
 }
 
-
 checks() {
   local model="${1:-clinic_visit}"
   echo ">> valid mask count ($model)"
@@ -433,7 +489,6 @@ checks() {
   echo ">> sample validator ($model, mask=7)"
   run-sql "SELECT 7 AS mask, \"acbp_is_valid__${model}\"(7) AS is_valid;" || true
 }
-
 
 explain() {
   local model="${1:?usage: $0 explain <model_name> <mask>}"
@@ -493,6 +548,162 @@ bench-all-present() {
   time bench-full-join-present "$model" "$data"
 }
 
+# ---------- Dashboard helpers ----------
+
+# Small helper: run a timing measurement on the server and print ms
+_db_time_ms() {
+  local sql="$1"
+  local warm="${2:-false}"   # true|false -> acbp_time_ms warmup parameter
+  local iters="${3:-1}"
+  docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+    -c "SELECT ROUND(acbp_time_ms(\$\$${sql}\$\$, ${iters}, ${warm})::numeric, 3);"
+}
+
+# Export a resultset to CSV (runs inside the container)
+_db_copy_csv() {
+  local sql="$1"; local out="$2"
+  mkdir -p "$(dirname "$out")"
+  docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -v ON_ERROR_STOP=1 \
+    -c "\COPY (${sql}) TO STDOUT WITH CSV HEADER" > "$out"
+}
+
+# Build the list of category columns for a model (excluding mask), in order
+_model_cat_cols() {
+  local model="$1"
+  docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+    -c "SELECT column_name
+          FROM information_schema.columns
+         WHERE table_schema='public' AND table_name='${model}_decision_space'
+           AND column_name <> 'mask'
+         ORDER BY ordinal_position;"
+}
+
+# Simulated dashboard: counts + top groups + a few KPI tables.
+# Creates:
+#  papers/results/<ts>/<model>/dashboard_perf.csv
+#  papers/results/<ts>/<model>/kpi_*.csv
+paper_bench_dashboard() {
+  set -euo pipefail
+  local model="${1:?usage: $0 paper-bench-dashboard <model> [topN] [iters]}"
+  local topN="${2:-12}"
+  local iters="${3:-2}"   # a bit higher smooths variance
+  local data_table="${model}_data"
+
+  local TS="$(date -u +%Y%m%dT%H%M%SZ)"
+  local OUTDIR="papers/results/${TS}/${model}"
+  mkdir -p "$OUTDIR"
+
+  mapfile -t COLS < <(_model_cat_cols "$model")
+  local C1="${COLS[0]:-}"
+  local C2="${COLS[1]:-}"
+
+  declare -A Q
+  Q["count_all"]="SELECT COUNT(*) FROM \"${data_table}\""
+  Q["top_groups_present"]="SELECT * FROM acbp_bench_full_join_present('${model}', '${data_table}', ${topN})"
+  Q["top_groups_full"]="SELECT * FROM acbp_bench_full_join('${model}', '${data_table}', true, ${topN})"
+
+  local i=0
+  for col in "${COLS[@]}"; do
+    Q["kpi_by_${col}"]="SELECT ${col} AS key, COUNT(*) AS cnt
+                          FROM \"${data_table}\"
+                         GROUP BY 1 ORDER BY 2 DESC LIMIT ${topN}"
+    i=$((i+1)); [ "$i" -ge 5 ] && break
+  done
+  if [ -n "${C1}" ] && [ -n "${C2}" ]; then
+    Q["kpi_by_${C1}_${C2}"]="SELECT ${C1} AS k1, ${C2} AS k2, COUNT(*) AS cnt
+                               FROM \"${data_table}\"
+                              GROUP BY 1,2 ORDER BY 3 DESC LIMIT ${topN}"
+  fi
+
+  # stable alphabetical order for reproducibility
+  mapfile -t ORDERED < <(printf '%s\n' "${!Q[@]}" | sort)
+
+  _labels_array_sql() {
+    local first=1
+    printf "ARRAY["
+    for lbl in "${ORDERED[@]}"; do
+      [ $first -eq 0 ] && printf ","
+      printf "'%s'" "$lbl"
+      first=0
+    done
+    printf "]::text[]"
+  }
+  _queries_array_sql() {
+    local first=1
+    printf "ARRAY["
+    for lbl in "${ORDERED[@]}"; do
+      [ $first -eq 0 ] && printf ","
+      # use $$…$$ to avoid bash history/param expansion issues
+      printf "\$\$%s\$\$" "${Q[$lbl]}"
+      first=0
+    done
+    printf "]::text[]"
+  }
+
+  _export_csvs() {
+    for lbl in "${ORDERED[@]}"; do
+      case "$lbl" in
+        top_groups_full)    _db_copy_csv "${Q[$lbl]}" "${OUTDIR}/top_groups_full.csv" ;;
+        top_groups_present) _db_copy_csv "${Q[$lbl]}" "${OUTDIR}/top_groups_present.csv" ;;
+        kpi_by_*)           _db_copy_csv "${Q[$lbl]}" "${OUTDIR}/${lbl}.csv" ;;
+      esac
+    done
+  }
+
+  _scenario_run() {
+    local scenario="$1"   # cold|warm
+    local warm_flag="$2"  # true|false for warmup inside server
+    local PERF="${OUTDIR}/dashboard_perf.csv"
+    [ -f "$PERF" ] || echo "scenario,label,ms" > "$PERF"
+
+    local lbls qrys
+    lbls="$(_labels_array_sql)"
+    qrys="$(_queries_array_sql)"
+
+    # optional warm primer using pg_prewarm, if available
+    if [ "$scenario" = "warm" ]; then
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "CREATE EXTENSION IF NOT EXISTS pg_prewarm;" >/dev/null 2>&1 || true
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "SELECT pg_prewarm('${data_table}'::regclass, 'buffer');" >/dev/null 2>&1 || true
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "SELECT pg_prewarm('${model}_decision_space_mat'::regclass, 'buffer');" >/dev/null 2>&1 || true
+      if docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+           -c "SELECT to_regclass('${model}_present_mat') IS NOT NULL;" | grep -q t; then
+        docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+          -c "SELECT pg_prewarm('${model}_present_mat'::regclass, 'buffer');" >/dev/null 2>&1 || true
+      fi
+      # prewarm likely indexes (best-effort)
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "SELECT pg_prewarm('uq_${model}_decision_space_mat'::regclass, 'buffer')" >/dev/null 2>&1 || true
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "SELECT pg_prewarm('uq_${model}_present_mat'::regclass, 'buffer')" >/dev/null 2>&1 || true
+      docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+        -c "SELECT pg_prewarm('idx_${data_table}_match'::regclass, 'buffer')" >/dev/null 2>&1 || true
+    fi
+
+    # one-shot timing of all queries in a single backend
+    docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -At -v ON_ERROR_STOP=1 \
+      -c "SELECT '${scenario}', label, ROUND(ms::numeric,3)
+            FROM acbp_time_ms_many(${lbls}, ${qrys}, ${iters}, ${warm_flag});" \
+      | awk -F'|' '{printf("%s,%s,%.3f\n",$1,$2,$3)}' >> "$PERF"
+
+    _export_csvs
+  }
+
+  echo ">> dashboard bench for ${model}"
+
+  echo ">> cold run (restart container)"
+  docker restart "$CONTAINER" >/dev/null
+  up >/dev/null
+  _scenario_run cold false
+
+  echo ">> warm run"
+  _scenario_run warm true
+
+  echo ">> wrote ${OUTDIR}/dashboard_perf.csv and KPI CSVs"
+}
+
 # ========= BACKUP / RESTORE / MAINT =========
 backup() {
   local out="${1:-acbp_backup_$(date +%Y%m%d_%H%M%S).sql}"
@@ -523,6 +734,349 @@ vacuum() {
 psql-c() {
   local sql="${1:?usage: $0 psql-c \"SELECT 1;\"}"
   run-sql "$sql"
+}
+
+# ========= PAPER RESULTS (seed + export) =========
+RESULTS_DIR=${RESULTS_DIR:-papers/results}
+
+# Low-level helper: copy a query as CSV to host
+_copy_csv() {
+  local outfile="$1"; shift
+  local sql="$*"
+  mkdir -p "$(dirname "$outfile")"
+  docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -v ON_ERROR_STOP=1 \
+    -c "\COPY ($sql) TO STDOUT WITH CSV HEADER" > "$outfile"
+  echo ">> wrote $outfile"
+}
+
+# Low-level helper: capture EXPLAIN text to host
+_capture_explain() {
+  local outfile="$1"; shift
+  local sql="$*"
+  mkdir -p "$(dirname "$outfile")"
+  docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -v ON_ERROR_STOP=1 -X -qAt \
+    -c "EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) $sql" > "$outfile"
+  echo ">> wrote $outfile"
+}
+
+# Seed <model>_data with N random rows sampled from the model's decision_space
+paper_seed() {
+  local model="${1:?usage: $0 paper-seed <model> [N] [rebuild|force]}"
+  local n="${2:-50000}"
+  local mode="${3:-}"
+  local tbl="${model}_data"
+  local dsv="${model}_decision_space"
+
+  echo ">> seeding ${tbl} with ${n} rows from ${dsv}"
+
+  # If rebuild/force: drop dependent present-only matview first, then table
+  if [ "$mode" = "rebuild" ] || [ "$mode" = "force" ]; then
+    run-sql "DROP MATERIALIZED VIEW IF EXISTS \"${model}_present_mat\" CASCADE;"
+    run-sql "DROP TABLE IF EXISTS \"${tbl}\";"
+    run-sql "CREATE TABLE \"${tbl}\" AS SELECT * FROM \"${dsv}\" WITH NO DATA;"
+  else
+    # Create if missing
+    run-sql "CREATE TABLE IF NOT EXISTS \"${tbl}\" AS SELECT * FROM \"${dsv}\" WITH NO DATA;"
+
+    # Check schema match (same columns/order)
+    local want have
+    want=$(docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+      -c "SELECT string_agg(column_name, ',' ORDER BY ordinal_position)
+            FROM information_schema.columns
+           WHERE table_schema='public' AND table_name='${dsv}'")
+    have=$(docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+      -c "SELECT string_agg(column_name, ',' ORDER BY ordinal_position)
+            FROM information_schema.columns
+           WHERE table_schema='public' AND table_name='${tbl}'")
+
+    if [ "$want" != "$have" ]; then
+      echo "!! ${tbl} schema != ${dsv}. Re-run with:  ./acbp.sh paper-seed ${model} ${n} rebuild"
+      return 1
+    fi
+  fi
+
+  run-sql "TRUNCATE TABLE \"${tbl}\";"
+  run-sql "INSERT INTO \"${tbl}\" SELECT * FROM \"${dsv}\" ORDER BY random() LIMIT ${n};"
+  run-sql "VACUUM ANALYZE \"${tbl}\";"
+
+  # optional index + mats (if helpers installed)
+  if docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+       -c "SELECT 1 FROM pg_proc WHERE proname='acbp_create_matching_index' LIMIT 1;" | grep -q 1; then
+    run-sql "SELECT acbp_create_matching_index('${model}', '${tbl}');"
+  fi
+
+  # Build decision-space mats (and present-only); the present mat function ANALYZEs itself.
+  run-sql "SELECT acbp_materialize('${model}');"
+  if docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+       -c "SELECT 1 FROM pg_proc WHERE proname='acbp_materialize_present' LIMIT 1;" | grep -q 1; then
+    run-sql "SELECT acbp_materialize_present('${model}', '${tbl}');"
+  fi
+}
+
+# Export metrics/top-groups/EXPLAIN for one model
+paper_bench() {
+  local model="${1:?usage: $0 paper-bench <model> [TOP_N]}"; shift || true
+  local topn="${1:-12}"
+  local ts; ts="$(date -u +%Y%m%dT%H%M%SZ)"
+  local outdir="${RESULTS_DIR}/${ts}/${model}"
+  mkdir -p "$outdir"
+
+  echo ">> exporting summary metrics for $model"
+  _copy_csv "${outdir}/summary.csv" "
+    SELECT '${model}' AS model,
+           (SELECT COUNT(*) FROM \"${model}_valid_masks\")       AS valid_masks,
+           (SELECT COUNT(*) FROM \"${model}_decision_space\")    AS decision_rows,
+           (SELECT COUNT(*) FROM \"${model}_data\")              AS data_rows,
+           CASE WHEN to_regclass('${model}_present_mat') IS NULL
+                THEN NULL
+                ELSE (SELECT COUNT(*) FROM \"${model}_present_mat\")
+           END                                                   AS present_rows,
+           now()                                                 AS collected_at
+  "
+
+  echo ">> exporting valid counts via JOIN/FUNC for $model"
+  _copy_csv "${outdir}/valid_counts.csv" "
+    SELECT 'valid_join' AS metric, acbp_bench_valid_join('${model}','${model}_data', true) AS value
+    UNION ALL
+    SELECT 'valid_func' AS metric, acbp_bench_valid_func('${model}','${model}_data')       AS value
+  "
+
+  echo ">> exporting top groups (full decision space) for $model"
+  _copy_csv "${outdir}/top_groups_full.csv" "
+    SELECT * FROM acbp_bench_full_join('${model}','${model}_data', true, ${topn})
+  "
+  _capture_explain "${outdir}/plan_top_groups_full.txt" \
+    "SELECT * FROM acbp_bench_full_join('${model}','${model}_data', true, ${topn});"
+
+  echo ">> exporting top groups (present-only) for $model (if available)"
+  if docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+       -c "SELECT 1 FROM pg_proc WHERE proname='acbp_bench_full_join_present' LIMIT 1;" | grep -q 1; then
+    _copy_csv "${outdir}/top_groups_present.csv" "
+      SELECT * FROM acbp_bench_full_join_present('${model}','${model}_data', ${topn})
+    "
+    _capture_explain "${outdir}/plan_top_groups_present.txt" \
+      "SELECT * FROM acbp_bench_full_join_present('${model}','${model}_data', ${topn});"
+  else
+    echo ">> present-only benches not installed; skipping"
+  fi
+
+  echo ">> done. Files in: ${outdir}"
+}
+
+# One-shot: compile/apply models, install utils, seed, and export for all
+paper_results_all() {
+  local seed_n="${1:-50000}"
+  local topn="${2:-12}"
+  echo "== PAPER RESULTS (all models) =="
+  "$0" install-db-utils
+
+  # Compile/apply if not present (use models/*)
+  if ! docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+       -c "SELECT 1 FROM pg_views WHERE viewname='clinic_visit_decision_space';" | grep -q 1; then
+    "$0" compile-apply models/clinic_visit.v0.json
+  fi
+  if ! docker exec -i "$CONTAINER" psql -U "$USER" -d "$DB" -X -qAt \
+       -c "SELECT 1 FROM pg_views WHERE viewname='inpatient_admission_decision_space';" | grep -q 1; then
+    "$0" compile-apply models/inpatient_admission.v0.json
+  fi
+
+  "$0" paper-seed clinic_visit "${seed_n}"
+  "$0" paper-bench clinic_visit "${topn}"
+
+  "$0" paper-seed inpatient_admission "${seed_n}"
+  "$0" paper-bench inpatient_admission "${topn}"
+}
+
+# ========= PAPER: MAKE MARKDOWN SNIPPET FROM LATEST RESULTS =========
+latest_results_dir() {
+  local base="papers/results"
+  [ -d "$base" ] || { echo "!! no results dir ($base)"; return 1; }
+  ls -1 "$base" | sort | tail -n1
+}
+
+paper_results_md() {
+  set -euo pipefail
+  local BASE="papers/results"
+  mkdir -p "$BASE"
+
+  _latest_for_model() {
+    local model="$1"
+    ls -1 "$BASE" 2>/dev/null | grep -E '^[0-9]{8}T[0-9]{6}Z$' | \
+    while read -r ts; do
+      [ -d "$BASE/$ts/$model" ] && echo "$ts"
+    done | sort | tail -n1
+  }
+
+  # small cross-platform mktemp helper
+  _mktemp_sql() {
+    if command -v mktemp >/dev/null 2>&1; then
+      mktemp "${TMPDIR:-/tmp}/acbp_sql_XXXXXX.sql"
+    else
+      echo "${BASE}/tmp_sql_$$.sql"
+    fi
+  }
+
+  local M1="clinic_visit"
+  local M2="inpatient_admission"
+  local TS1 TS2
+  TS1="$(_latest_for_model "$M1" 2>/dev/null || echo "")"
+  TS2="$(_latest_for_model "$M2" 2>/dev/null || echo "")"
+
+  if [ -z "${TS1}" ] && [ -z "${TS2}" ]; then
+    echo "!! no model result dirs found under $BASE" >&2
+    return 1
+  fi
+
+  local OUT="$BASE/results-latest.md"
+  {
+    echo "<!-- RESULTS:BEGIN -->"
+    echo "## 8.1 Results (synthetic; 50k rows per model)"
+    echo
+    if [ -n "$TS1" ] && [ -n "$TS2" ] && [ "$TS1" != "$TS2" ]; then
+      echo "_Run timestamps (UTC): clinic_visit=${TS1}; inpatient_admission=${TS2}_"
+    else
+      echo "_Run timestamp (UTC): ${TS1:-$TS2}_"
+    fi
+    echo
+
+    for M in "$M1" "$M2"; do
+      local TS SUM VC PERF
+      TS="$(_latest_for_model "$M" 2>/dev/null || echo "")"
+      [ -z "$TS" ] && continue
+
+      case "$M" in
+        clinic_visit)        echo "### Clinic Visit" ;;
+        inpatient_admission) echo "### Inpatient Admission" ;;
+        *)                   echo "### $M" ;;
+      esac
+      echo
+
+      # ---------- Complexity & sanity (from compiler) ----------
+      local MODEL_JSON="models/${M}.v0.json"
+      if [ -f "$MODEL_JSON" ]; then
+        local OUTDIR="$BASE/$TS/$M"
+        mkdir -p "$OUTDIR"
+        local TMP_SQL; TMP_SQL="$(_mktemp_sql)"
+        "$PY" -m acbp_tester "$MODEL_JSON" --enumerate -o "$TMP_SQL" > "${OUTDIR}/compiler_sanity.txt" 2>&1 || true
+        rm -f "$TMP_SQL"
+
+        if [ -s "${OUTDIR}/compiler_sanity.txt" ]; then
+          echo "**Complexity & sanity (compiler)**"
+          echo
+          echo '```text'
+          if ! grep -E '^(Model:|  B \(flags\)|  B_eff|  n_eff|  Complexity:|  Valid masks|  First few:|=== Sanity estimates|  Flag prevalence|  Theoretical max|  Est\. remaining|  Est\. pruned|^=== Actuals|  Decision rows:|  Present-only rows:|  Data rows:|  note: )' \
+              "${OUTDIR}/compiler_sanity.txt" ; then
+            cat "${OUTDIR}/compiler_sanity.txt"
+          fi
+          echo '```'
+          echo
+        fi
+      fi
+
+      # ---------- Metric/value table ----------
+      SUM="$BASE/$TS/$M/summary.csv"
+      VC="$BASE/$TS/$M/valid_counts.csv"
+      PERF="$BASE/$TS/$M/dashboard_perf.csv"
+
+      if [ -f "$SUM" ]; then
+        local VM DS DR PR
+        VM=$(awk -F',' 'NR==2{print $2}' "$SUM")
+        DS=$(awk -F',' 'NR==2{print $3}' "$SUM")
+        DR=$(awk -F',' 'NR==2{print $4}' "$SUM")
+        PR=$(awk -F',' 'NR==2{print $5}' "$SUM")
+
+        local VJ VF
+        if [ -f "$VC" ]; then
+          VJ=$(awk -F',' '$1=="valid_join"{print $2}' "$VC")
+          VF=$(awk -F',' '$1=="valid_func"{print $2}' "$VC")
+        fi
+
+        local FULL_MS PRESENT_MS
+        if [ -f "$PERF" ]; then
+          FULL_MS=$(awk -F',' '$1=="warm" && $2=="top_groups_full"{printf("%.3f",$3)}' "$PERF")
+          [ -z "$FULL_MS" ] && FULL_MS=$(awk -F',' '$1=="cold" && $2=="top_groups_full"{printf("%.3f",$3)}' "$PERF")
+          PRESENT_MS=$(awk -F',' '$1=="warm" && $2=="top_groups_present"{printf("%.3f",$3)}' "$PERF")
+          [ -z "$PRESENT_MS" ] && PRESENT_MS=$(awk -F',' '$1=="cold" && $2=="top_groups_present"{printf("%.3f",$3)}' "$PERF")
+        fi
+
+        echo "| metric | value |"
+        echo "|---|---:|"
+        [ -n "${DS:-}" ] && echo "| Decision space rows | ${DS} |"
+        [ -n "${VM:-}" ] && echo "| Valid masks | ${VM} |"
+        [ -n "${DR:-}" ] && echo "| Data rows | ${DR} |"
+        [ -n "${PR:-}" ] && echo "| Present-only rows | ${PR} |"
+        [ -n "${VJ:-}" ] && echo "| Valid via JOIN | ${VJ} |"
+        [ -n "${VF:-}" ] && echo "| Valid via function | ${VF} |"
+        [ -n "${FULL_MS:-}" ] && echo "| Top-groups latency (full) | ${FULL_MS} ms |"
+        [ -n "${PRESENT_MS:-}" ] && echo "| Top-groups latency (present-only) | ${PRESENT_MS} ms |"
+        # show present-only speedup if both latencies exist
+        if [ -n "${FULL_MS:-}" ] && [ -n "${PRESENT_MS:-}" ]; then
+          awk -v f="$FULL_MS" -v p="$PRESENT_MS" \
+          'BEGIN{ if (f>0) printf("| Present-only speedup | %.1f%% |\n", (100*(f-p)/f)) }'
+        fi
+        echo
+      fi
+
+      # ---------- Dashboard summary ----------
+      if [ -f "$PERF" ]; then
+        local COLD_TOT WARM_TOT COLD_Q WARM_Q
+        COLD_TOT=$(awk -F, 'NR>1 && $1=="cold"{s+=$3} END{printf("%.3f", s+0)}' "$PERF")
+        WARM_TOT=$(awk -F, 'NR>1 && $1=="warm"{s+=$3} END{printf("%.3f", s+0)}' "$PERF")
+        COLD_Q=$(awk -F, 'NR>1 && $1=="cold"{n++} END{print n+0}' "$PERF")
+        WARM_Q=$(awk -F, 'NR>1 && $1=="warm"{n++} END{print n+0}' "$PERF")
+
+        echo "**Simulated dashboard performance**"
+        echo
+        echo "| scenario | queries | total ms | avg per query |"
+        echo "|---|---:|---:|---:|"
+        awk -v ct="$COLD_TOT" -v cq="$COLD_Q" 'BEGIN{printf("| cold | %d | %.3f | %.3f |\n", cq, ct, (cq?ct/cq:0))}'
+        awk -v wt="$WARM_TOT" -v wq="$WARM_Q" 'BEGIN{printf("| warm | %d | %.3f | %.3f |\n", wq, wt, (wq?wt/wq:0))}'
+        echo
+      fi
+
+      # ---------- Artifacts ----------
+      echo "_Artifacts_:"
+      echo "- \`$BASE/$TS/$M/summary.csv\`"
+      echo "- \`$BASE/$TS/$M/valid_counts.csv\`"
+      echo "- \`$BASE/$TS/$M/top_groups_full.csv\`, plan: \`$BASE/$TS/$M/plan_top_groups_full.txt\`"
+      echo "- \`$BASE/$TS/$M/top_groups_present.csv\`, plan: \`$BASE/$TS/$M/plan_top_groups_present.txt\`"
+      [ -f "$PERF" ] && echo "- \`$BASE/$TS/$M/dashboard_perf.csv\` (cold/warm timings)"
+      [ -f "$BASE/$TS/$M/compiler_sanity.txt" ] && echo "- \`$BASE/$TS/$M/compiler_sanity.txt\` (complexity & sanity output)"
+      if ls "$BASE/$TS/$M"/kpi_*.csv >/dev/null 2>&1; then
+        for f in "$BASE/$TS/$M"/kpi_*.csv; do
+          bn=$(basename "$f")
+          echo "- \`$BASE/$TS/$M/$bn\`"
+        done
+      fi
+      echo
+    done
+
+    echo "<!-- RESULTS:END -->"
+  } > "$OUT"
+
+  echo ">> wrote $OUT"
+}
+
+# ========= PAPER: INJECT RESULTS INTO THE PAPER (between markers) =========
+paper_update_paper() {
+  local md="papers/acbp-systems-paper.md"
+  local snippet="papers/results/results-latest.md"
+
+  [ -f "$snippet" ] || { echo "!! $snippet not found. Run: ./acbp.sh paper-results-md"; return 1; }
+  [ -f "$md" ] || { echo "!! $md not found"; return 1; }
+
+  if ! grep -q '<!-- RESULTS:BEGIN -->' "$md"; then
+    printf '\n\n## 8 Evaluation & Results\n\n<!-- RESULTS:BEGIN -->\n<!-- RESULTS:END -->\n' >> "$md"
+  fi
+
+  awk -v inc="$snippet" '
+    BEGIN{copy=1}
+    /<!-- RESULTS:BEGIN -->/ {print; system("cat " inc); copy=0; next}
+    /<!-- RESULTS:END -->/   {print; copy=1; next}
+    copy==1 {print}
+  ' "$md" > "${md}.tmp" && mv "${md}.tmp" "$md"
+
+  echo ">> injected results into ${md}"
 }
 
 # ========= USAGE =========
@@ -564,6 +1118,9 @@ Benchmarks (generic):
   bench-full-join [model] [data]   Grouped counts via decision_space_mat
   bench-all [model] [data]         Run all three
 
+Dashboard simulation:
+  paper-bench-dashboard <model> [topN] [iters]   Cold+warm timings + KPI CSVs
+
 Maintenance:
   vacuum <table>                   VACUUM ANALYZE a table
   psql-c "SQL..."                  Run one-off SQL via -c
@@ -572,6 +1129,13 @@ Backup:
   backup [file.sql]                Dump the DB
   restore file.sql                 Restore from a dump
   restore-clean file.sql           Drop & recreate schema before restore
+
+Paper:
+  paper-seed <model> [N] [rebuild]  Seed <model>_data from decision_space
+  paper-bench <model> [TOP_N]       Export summary + top-groups (+EXPLAIN)
+  paper-results-all [N] [TOP_N]     Compile/apply, seed, export for all
+  paper-results-md                  Build papers/results/results-latest.md
+  paper-update-paper                Inject latest results into paper MD
 
 Notes:
 - Data table defaults to <model>_data. Override by passing [data] explicitly.
@@ -608,6 +1172,7 @@ case "${cmd}" in
   bench-full-join-present) bench-full-join-present "${1:-clinic_visit}" "${2:-${1:-clinic_visit}_data}" ;;
   bench-all)        bench-all        "${1:-clinic_visit}" "${2:-${1:-clinic_visit}_data}" ;;
   bench-all-present) bench-all-present "${1:-clinic_visit}" "${2:-${1:-clinic_visit}_data}" ;;
+  paper-bench-dashboard) paper_bench_dashboard "$@" ;;
 
   vacuum) vacuum "$@" ;;
   psql-c) psql-c "$@" ;;
@@ -615,6 +1180,12 @@ case "${cmd}" in
   backup) backup "${1:-}" ;;
   restore) restore "$@" ;;
   restore-clean) restore-clean "$@" ;;
+
+  paper-seed) paper_seed "$@" ;;
+  paper-bench) paper_bench "$@" ;;
+  paper-results-all) paper_results_all "${1:-50000}" "${2:-12}" ;;
+  paper-results-md) paper_results_md "$@" ;;
+  paper-update-paper) paper_update_paper "$@" ;;
 
   *) usage ;;
 esac

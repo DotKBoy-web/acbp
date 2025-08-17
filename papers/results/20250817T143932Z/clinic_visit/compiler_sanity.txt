@@ -1,0 +1,13 @@
+Model: clinic_visit
+  B (flags):       5
+  B_eff (reduced): 5
+  n_eff (cats):    101250
+  Complexity:      2^5 * 101250
+  Valid masks enumerated (bit-only): 7 / 32
+  First few: [0, 1, 3, 7, 8, 9, 17]
+
+=== Sanity estimates (uniform, independent categories; excludes FORBID_IF_SQL) ===
+  Flag prevalence among valid masks: booked=71.4%, checked_in=28.6%, seen_by_doctor=14.3%, canceled=28.6%, rescheduled=14.3%
+  Theoretical max rows (bit-only): 708,750
+  Estimated pruned rows (cat+runs): 708,750  (~100.0% of max)
+  note: Excluded 6 FORBID_IF_SQL rule(s) from estimate.

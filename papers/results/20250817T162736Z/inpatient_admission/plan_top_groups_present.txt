@@ -1,0 +1,4 @@
+Function Scan on acbp_bench_full_join_present  (cost=0.25..10.25 rows=1000 width=40) (actual time=510.320..510.322 rows=12 loops=1)
+  Buffers: shared hit=154145
+Planning Time: 0.051 ms
+Execution Time: 510.821 ms
