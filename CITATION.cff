@@ -1,15 +1,44 @@
 cff-version: 1.2.0
+message: "If you use ACBP, please cite this software (and the whitepaper)."
+type: software
 title: "ACBP: Al Anazi Categorical-Boolean Paradigm (DSL + SQL compiler)"
-message: "Please cite this software and DSL spec."
+version: "0.4.0"
+date-released: "2025-08-18"
+
 authors:
   - family-names: "Al Anazi"
     given-names: "Muteb Hail S."
+    orcid: "https://orcid.org/0009-0004-2668-3564"
+    affiliation: "Independent Researcher (DotK), Riyadh, Saudi Arabia"
+    email: "dotkboy@outlook.com"
+
+repository-code: "https://github.com/DotKBoy-web/acbp"
+repository-artifact: "https://github.com/DotKBoy-web/acbp/releases/tag/v0.4.0"
+url: "https://dotkboy-web.github.io/acbp/"
+
 identifiers:
   - type: url
-    value: https://github.com/DotKBoy-web/acbp
+    value: "https://github.com/DotKBoy-web/acbp"
   - type: url
-    value: https://dotkboy-web.github.io/acbp/
-version: "v0.3.0"
-date-released: "2025-08-17"
-repository-code: "https://github.com/DotKBoy-web/acbp"
-keywords: [ "DSL", "PostgreSQL", "decision rules", "bitmask", "materialized-views", "deterministic-systems" ]
+    value: "https://dotkboy-web.github.io/acbp/"
+  - type: doi
+    value: "10.5281/zenodo.16888028"
+
+keywords:
+  - DSL
+  - PostgreSQL
+  - decision rules
+  - bitmask
+  - materialized views
+  - deterministic systems
+
+preferred-citation:
+  type: article
+  title: "ACBP: A SQL-Native Categorical-Boolean DSL for Deterministic Decision Spaces"
+  authors:
+    - family-names: "Al Anazi"
+      given-names: "Muteb Hail S."
+      orcid: "https://orcid.org/0009-0004-2668-3564"
+  year: 2025
+  url: "https://github.com/DotKBoy-web/acbp/releases/download/v0.4.0/acbp-systems-paper.pdf"
+  notes: "Whitepaper included in the v0.4.0 release."
