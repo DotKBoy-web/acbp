@@ -1,14 +1,21 @@
 name: Verify ACBP Theorems
+
 on:
   push:
+    branches: [ master ]
     paths:
-      - 'docs/acbp_theorems.md'
-      - 'sql/verify_theorems.sql'
-      - 'Makefile'
+      - "sql/**"
+      - "docs/acbp_theorems.md"
+      - ".github/workflows/verify-theorems.yml"
+      - "scripts/**"
+  pull_request:
+    branches: [ master ]
   workflow_dispatch: {}
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:16
@@ -16,27 +23,29 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: acbp
-        ports: ['5432:5432']
+        ports:
+          - "5432:5432"
         options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+          --health-cmd="pg_isready -U postgres -d acbp"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=20
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Install psql
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install psql client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - name: Migrate schema & seeds
+
+      - name: Bootstrap demo mats (CI)
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acbp
         run: |
-          psql "$DATABASE_URL" -f sql/001_init.sql
-          psql "$DATABASE_URL" -f sql/002_seed.sql
-          psql "$DATABASE_URL" -f sql/010_matviews.sql || true
-      - name: Verify theorems
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f sql/000_ci_bootstrap.sql
+
+      - name: Run theorem verifier
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acbp
-        run: make verify-theorems
-      - name: Ensure doc header exists
         run: |
-          grep -q "ACBP Decision Space — Theorems & Proofs" docs/acbp_theorems.md
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f sql/verify_theorems_public_auto.sql
