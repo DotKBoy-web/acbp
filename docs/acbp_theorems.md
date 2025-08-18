@@ -1,3 +1,12 @@
+---
+layout: default
+title: ACBP — Theorems & Proofs (Verified)
+---
+
+# ACBP Decision Space — Theorems & Proofs
+_Prepared: 2025-08-18 (Asia/Riyadh)_
+…
+
 # ACBP Decision Space — Theorems & Proofs
 _Prepared: 2025-08-18 (Asia/Riyadh)_
 

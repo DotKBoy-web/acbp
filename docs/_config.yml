@@ -1,6 +1,7 @@
-baseurl: "/acbp"
-title: "ACBP"
-theme: minima
+title: ACBP
+description: SQL-native decision rules — equation, proofs, examples, verified metrics.
+theme: jekyll-theme-cayman
 markdown: kramdown
-kramdown:
-  input: GFM
+baseurl: "/acbp"         # project pages base path
+url: "https://dotkboy-web.github.io"
+permalink: pretty
