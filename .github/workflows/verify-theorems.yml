@@ -1,0 +1,42 @@
+name: Verify ACBP Theorems
+on:
+  push:
+    paths:
+      - 'docs/acbp_theorems.md'
+      - 'sql/verify_theorems.sql'
+      - 'Makefile'
+  workflow_dispatch: {}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: acbp
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Migrate schema & seeds
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acbp
+        run: |
+          psql "$DATABASE_URL" -f sql/001_init.sql
+          psql "$DATABASE_URL" -f sql/002_seed.sql
+          psql "$DATABASE_URL" -f sql/010_matviews.sql || true
+      - name: Verify theorems
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acbp
+        run: make verify-theorems
+      - name: Ensure doc header exists
+        run: |
+          grep -q "ACBP Decision Space — Theorems & Proofs" docs/acbp_theorems.md

@@ -178,6 +178,9 @@ Top grouping error in UI:
 Matview drift (columns changed in DSL):
     ./acbp.sh rematerialize <model> (drops & rebuilds matviews)
 
+## Theorems & Proofs
+See [`docs/acbp_theorems.md`](docs/acbp_theorems.md) for formal statements (soundness, completeness, present-only monotonicity, determinism).
+
 ## License
 
 Source-available for **noncommercial, personal evaluation only** under
