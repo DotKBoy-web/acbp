@@ -2,23 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>ACBP — CITATION.cff</title>
+<title>ACBP — Citation</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/acbp/ACBP_Logo.png">
 <meta name="theme-color" content="#0b0f14">
 <style>
-  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#abc0d3;--link:#66b3ff;--card:#121821;--border:#1e2633;--code:#0e141b}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#b1c2d3;--link:#66b3ff;--accent:#5dd19b;--card:#121821;--border:#1e2633;--code:#0e141b}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
   a{color:var(--link)} a:hover{text-decoration:none}
-  .wrap{max-width:880px;margin:40px auto;padding:0 20px}
+  .wrap{max-width:980px;margin:36px auto;padding:0 20px}
   header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-  header img{width:40px;height:40px;object-fit:contain}
+  header img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 6px 18px rgba(93,209,155,.25))}
+  .mut{color:var(--mut)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text)}
+  .btn:hover{background:#212b3a;text-decoration:none}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr}
   .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
-  pre,code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .kv{display:grid;grid-template-columns:160px 1fr;gap:6px 14px}
+  .kv div{padding:2px 0}
+  .tag{display:inline-block;background:#0f1620;border:1px solid var(--border);border-radius:999px;padding:4px 8px;margin:2px 6px 0 0;color:var(--mut);font-size:12px}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;margin:0}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text);text-decoration:none}
-  .btn:hover{background:#212b3a}
 </style>
 </head>
 <body>
@@ -26,34 +31,138 @@
   <header>
     <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
     <div>
-      <h1 style="margin:0">CITATION.cff</h1>
-      <div style="color:var(--mut)">Rendered from <code>/CITATION.cff</code></div>
+      <h1 style="margin:0">Cite ACBP</h1>
+      <div class="mut">Rendered from <code>CITATION.cff</code> (with graceful fallback)</div>
     </div>
   </header>
 
   <div class="row">
     <a class="btn" href="/acbp/">Home</a>
-    <a class="btn" href="/acbp/index.html">Docs index</a>
-    <a class="btn" href="/acbp/CITATION.cff" download>Download</a>
+    <a class="btn" href="/acbp/">Docs index</a>
+    <a class="btn" href="https://raw.githubusercontent.com/DotKBoy-web/acbp/master/CITATION.cff" target="_blank" rel="noopener">Download CFF</a>
     <a class="btn" href="https://github.com/DotKBoy-web/acbp/blob/master/CITATION.cff" target="_blank" rel="noopener">View on GitHub</a>
-    <button id="copy" class="btn" type="button">Copy</button>
+    <button id="copyBtn" class="btn" type="button">Copy</button>
   </div>
 
-  <article class="card">
-    <pre id="code" aria-label="CITATION.cff content">Loading…</pre>
-  </article>
+  <section class="grid">
+    <article id="summary" class="card" aria-label="Citation summary">
+      <h2 style="margin:0 0 10px;color:var(--accent)">Summary</h2>
+      <div class="kv" id="kv"></div>
+      <div id="tags" style="margin-top:8px"></div>
+    </article>
+
+    <article class="card" aria-label="Raw CITATION.cff">
+      <h2 style="margin:0 0 10px;color:var(--accent)">Raw file</h2>
+      <pre id="code">Loading…</pre>
+    </article>
+  </section>
 </div>
 
+<!-- Embedded fallback so the page still works even if the network blocks raw.githubusercontent.com -->
+<script id="cff-fallback" type="text/plain">
+cff-version: 1.2.0
+message: "If you use ACBP, please cite this software (and the whitepaper)."
+type: software
+title: "ACBP: Al Anazi Categorical-Boolean Paradigm (DSL + SQL compiler)"
+version: "0.4.0"
+date-released: "2025-08-18"
+
+authors:
+  - family-names: "Al Anazi"
+    given-names: "Muteb Hail S."
+    orcid: "https://orcid.org/0009-0004-2668-3564"
+    affiliation: "Independent Researcher (DotK), Riyadh, Saudi Arabia"
+    email: "dotkboy@outlook.com"
+
+repository-code: "https://github.com/DotKBoy-web/acbp"
+repository-artifact: "https://github.com/DotKBoy-web/acbp/releases/tag/v0.4.0"
+url: "https://dotkboy-web.github.io/acbp/"
+
+identifiers:
+  - type: url
+    value: "https://github.com/DotKBoy-web/acbp"
+  - type: url
+    value: "https://dotkboy-web.github.io/acbp/"
+  - type: doi
+    value: "10.5281/zenodo.16888028"
+
+keywords:
+  - DSL
+  - PostgreSQL
+  - decision rules
+  - bitmask
+  - materialized views
+  - deterministic systems
+
+preferred-citation:
+  type: article
+  title: "ACBP: A SQL-Native Categorical-Boolean DSL for Deterministic Decision Spaces"
+  authors:
+    - family-names: "Al Anazi"
+      given-names: "Muteb Hail S."
+      orcid: "https://orcid.org/0009-0004-2668-3564"
+  year: 2025
+  url: "https://github.com/DotKBoy-web/acbp/releases/download/v0.4.0/acbp-systems-paper.pdf"
+  notes: "Whitepaper included in the v0.4.0 release."
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <script>
 (async function(){
-  const url = 'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/CITATION.cff';
-  const txt = await res.text();
-  const el  = document.getElementById('code');
-  el.textContent = txt;
-  document.getElementById('copy').onclick = async () => {
-    try { await navigator.clipboard.writeText(txt); event.target.textContent='Copied!'; setTimeout(()=>event.target.textContent='Copy',1200); }
-    catch { const r=document.createRange(); r.selectNodeContents(el); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+  const rawUrl = 'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/CITATION.cff';
+  let text;
+  try { const r = await fetch(rawUrl); if (!r.ok) throw 0; text = await r.text(); }
+  catch { text = document.getElementById('cff-fallback').textContent.trim(); }
+
+  // Raw view
+  const pre = document.getElementById('code');
+  pre.textContent = text;
+
+  // Copy
+  document.getElementById('copyBtn').onclick = async () => {
+    try { await navigator.clipboard.writeText(text); event.target.textContent='Copied!'; setTimeout(()=>event.target.textContent='Copy',1200); }
+    catch { const r=document.createRange(); r.selectNodeContents(pre); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
   };
+
+  // Summary
+  try {
+    const cff = jsyaml.load(text);
+
+    const kv = document.getElementById('kv');
+    const add = (k,v) => { const kdiv=document.createElement('div'); kdiv.style.color='var(--mut)'; kdiv.textContent=k;
+                            const vdiv=document.createElement('div'); vdiv.innerHTML=v; kv.appendChild(kdiv); kv.appendChild(vdiv); };
+
+    const title = cff.title || 'ACBP';
+    const ver = cff.version ? `v${cff.version}` : '';
+    const date = cff['date-released'] || '';
+    add('Title', `${title} ${ver ? `<span class="mut">(${ver})</span>`: ''}`);
+    add('Release date', date ? new Date(date).toISOString().slice(0,10) : '—');
+
+    if (Array.isArray(cff.authors) && cff.authors.length){
+      const a = cff.authors[0];
+      const name = [a['given-names'], a['family-names']].filter(Boolean).join(' ');
+      const aff = a.affiliation ? `, <span class="mut">${a.affiliation}</span>` : '';
+      const orcid = a.orcid ? ` · <a href="${a.orcid}" target="_blank" rel="noopener">ORCID</a>` : '';
+      add('Author', `${name}${aff}${orcid}`);
+      if (a.email) add('Contact', `<a href="mailto:${a.email}">${a.email}</a>`);
+    }
+
+    if (cff.identifiers){
+      const doi = (cff.identifiers.find(i=>i.type==='doi')||{}).value;
+      if (doi) add('DOI', `<a href="https://doi.org/${doi}" target="_blank" rel="noopener">${doi}</a>`);
+    }
+
+    if (cff['repository-code']) add('Code', `<a href="${cff['repository-code']}" target="_blank" rel="noopener">GitHub</a>`);
+    if (cff['repository-artifact']) add('Release', `<a href="${cff['repository-artifact']}" target="_blank" rel="noopener">Artifacts</a>`);
+    if (cff.url) add('Project page', `<a href="${cff.url}" target="_blank" rel="noopener">${cff.url}</a>`);
+
+    if (Array.isArray(cff.keywords) && cff.keywords.length){
+      const tags = document.getElementById('tags');
+      cff.keywords.forEach(w => { const span = document.createElement('span'); span.className='tag'; span.textContent = w; tags.appendChild(span); });
+    }
+  } catch (e) {
+    // ignore parse errors; raw view still works
+  }
 })();
 </script>
 </body>

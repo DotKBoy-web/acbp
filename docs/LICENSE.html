@@ -7,18 +7,19 @@
 <link rel="icon" href="/acbp/ACBP_Logo.png">
 <meta name="theme-color" content="#0b0f14">
 <style>
-  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#abc0d3;--link:#66b3ff;--card:#121821;--border:#1e2633;--code:#0e141b}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#b1c2d3;--link:#66b3ff;--accent:#5dd19b;--card:#121821;--border:#1e2633;--code:#0e141b}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
   a{color:var(--link)} a:hover{text-decoration:none}
-  .wrap{max-width:880px;margin:40px auto;padding:0 20px}
+  .wrap{max-width:980px;margin:36px auto;padding:0 20px}
   header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-  header img{width:40px;height:40px;object-fit:contain}
+  header img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 6px 18px rgba(93,209,155,.25))}
+  .mut{color:var(--mut)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text)}
+  .btn:hover{background:#212b3a;text-decoration:none}
   .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
-  pre,code{font-family:ui-monospace,Menlo,Consolas,monospace}
-  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;margin:0}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text);text-decoration:none}
-  .btn:hover{background:#212b3a}
+  pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;margin:0;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -26,33 +27,95 @@
   <header>
     <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
     <div>
-      <h1 style="margin:0">License</h1>
-      <div style="color:var(--mut)">Rendered from <code>/LICENSE</code></div>
+      <h1 style="margin:0">DotK Proprietary Noncommercial License v1.0</h1>
+      <div class="mut">Rendered from <code>LICENSE</code> (with graceful fallback)</div>
     </div>
   </header>
 
   <div class="row">
     <a class="btn" href="/acbp/">Home</a>
-    <a class="btn" href="/acbp/index.html">Docs index</a>
-    <a class="btn" href="/acbp/LICENSE" download>Download</a>
+    <a class="btn" href="/acbp/">Docs index</a>
+    <a class="btn" href="https://raw.githubusercontent.com/DotKBoy-web/acbp/master/LICENSE" target="_blank" rel="noopener">Download</a>
     <a class="btn" href="https://github.com/DotKBoy-web/acbp/blob/master/LICENSE" target="_blank" rel="noopener">View on GitHub</a>
-    <button id="copy" class="btn" type="button">Copy</button>
+    <button id="copyBtn" class="btn" type="button">Copy</button>
   </div>
 
-  <article class="card">
-    <pre id="code" aria-label="LICENSE content">Loading…</pre>
+  <article class="card" aria-label="License text">
+    <pre id="code">Loading…</pre>
   </article>
 </div>
 
+<!-- Embedded fallback -->
+<script id="license-fallback" type="text/plain">
+DotK Proprietary Noncommercial License v1.0
+SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+
+Copyright (c) 2025 DotK (Muteb Hail S Al Anazi). All rights reserved.
+
+Permission is granted to any individual to download, view, and evaluate
+the Software for personal, noncommercial, internal evaluation only
+(“Evaluation Use”).
+
+Restrictions. You may NOT, without prior written permission from the
+copyright holder:
+  • use the Software for any Commercial Purpose (including providing
+    services to third parties, running in production, SaaS/hosting,
+    internal business operations, or research done for or funded by a
+    commercial entity);
+  • copy, publish, distribute, or make the Software available to any
+    third party (including posting it publicly or repackaging);
+  • modify, create derivative works, or merge the Software for any
+    purpose other than Evaluation Use; any such modifications must not
+    be disclosed or distributed;
+  • sublicense, sell, or otherwise transfer any rights in the Software;
+  • remove or alter any copyright, trademark, or attribution notice;
+  • circumvent access controls or use the Software to train models or
+    datasets intended for commercial or production use.
+
+Commercial Use. ANY commercial or production use requires a separate
+written commercial license from the copyright holder.
+Contact:
+  `dotkboy@outlook.com`
+
+Ownership. The Software is licensed, not sold. All rights not expressly
+granted are reserved by the copyright holder.
+
+Term & Termination. This license terminates automatically if you breach
+it. Upon termination you must immediately stop all use and destroy all
+copies. The sections titled Restrictions, Ownership, Warranty Disclaimer,
+and Limitation of Liability survive termination.
+
+Warranty Disclaimer. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY
+OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NONINFRINGEMENT.
+
+Limitation of Liability. IN NO EVENT WILL THE COPYRIGHT HOLDER BE LIABLE
+FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Governing Law. Any dispute arising out of or related to this license
+will be governed by the laws of the licensor’s jurisdiction, without
+regard to conflict-of-law principles.
+
+If you need a commercial license,
+email `dotkboy@outlook.com`.
+</script>
+
 <script>
 (async function(){
-  const url = 'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/LICENSE';
-  const txt = await res.text();
-  const el  = document.getElementById('code');
-  el.textContent = txt;
-  document.getElementById('copy').onclick = async () => {
-    try { await navigator.clipboard.writeText(txt); event.target.textContent='Copied!'; setTimeout(()=>event.target.textContent='Copy',1200); }
-    catch { const r=document.createRange(); r.selectNodeContents(el); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+  const rawUrl = 'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/LICENSE';
+  let text;
+  try { const r = await fetch(rawUrl); if (!r.ok) throw 0; text = await r.text(); }
+  catch { text = document.getElementById('license-fallback').textContent.trim(); }
+
+  const pre = document.getElementById('code');
+  pre.textContent = text;
+
+  document.getElementById('copyBtn').onclick = async () => {
+    try { await navigator.clipboard.writeText(text); event.target.textContent='Copied!'; setTimeout(()=>event.target.textContent='Copy',1200); }
+    catch { const r=document.createRange(); r.selectNodeContents(pre); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
   };
 })();
 </script>
