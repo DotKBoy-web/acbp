@@ -6,17 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/acbp/ACBP_Logo.png">
 <meta name="theme-color" content="#0b0f14">
-<meta name="description" content="ACBP DSL: SQL-native specification with deterministic predicates, encoding, and compiler contract.">
-
+<meta name="description" content="ACBP DSL: SQL-native spec with deterministic predicates and compiler contract.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
 <style>
-  :root{
-    --bg:#0b0f14; --text:#e7edf4; --mut:#b1c2d3; --link:#66b3ff; --accent:#5dd19b;
-    --card:#121821; --code:#0e141b; --border:#1e2633; --shadow:0 6px 18px rgba(0,0,0,.35);
-  }
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:17px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  a{color:var(--link);text-decoration:none}
-  a:hover{text-decoration:underline}
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#b1c2d3;--link:#66b3ff;--accent:#5dd19b;--card:#121821;--code:#0e141b;--border:#1e2633;--shadow:0 6px 18px rgba(0,0,0,.35)}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:17px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased}
+  a{color:var(--link)} a:hover{text-decoration:underline}
   .wrap{max-width:1200px;margin:28px auto;padding:0 20px}
   header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
   header img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 6px 18px rgba(93,209,155,.25))}
@@ -25,7 +21,7 @@
   .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text)}
   .btn:hover{background:#212b3a;text-decoration:none}
   .grid{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px}
-  @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
   .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
   .markdown{max-width:72ch;margin:0 auto}
   .markdown h1,.markdown h2,.markdown h3{line-height:1.25;margin:1.2em 0 .5em}
@@ -37,11 +33,9 @@
   .markdown blockquote{margin:1em 0;padding:.6em .9em;border-left:3px solid var(--accent);background:#0e141b33;border-radius:8px;color:var(--mut)}
   .markdown code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);border:1px solid var(--border);border-radius:6px;padding:.1em .35em}
   .markdown pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto}
-  .markdown table{border-collapse:collapse;width:100%;margin:1em 0}
-  .markdown th,.markdown td{border:1px solid var(--border);padding:.45em .6em;text-align:left}
-  .markdown tr:nth-child(even){background:#0e141b80}
+  .katex{font-size:1.02em} .katex-display{margin:1.1em 0; padding:.2em .1em; text-align:center} .katex-display>.katex{white-space:normal}
   .anchored{position:relative; scroll-margin-top:80px}
-  .anchored .anchor{position:absolute; left:-1.2em; top:50%; transform:translateY(-50%); opacity:0; text-decoration:none; color:var(--mut); font-weight:700}
+  .anchored .anchor{position:absolute; left:-1.2em; top:50%; transform:translateY(-50%); opacity:0; color:var(--mut); font-weight:700}
   .anchored:hover .anchor{opacity:1}
   #toc{position:sticky; top:14px; max-height:calc(100vh - 28px); overflow:auto}
   #toc h2{margin:0 0 8px; font-size:16px; color:var(--accent)}
@@ -76,7 +70,7 @@
       <div id="toc-body" class="mut">Loading…</div>
     </aside>
 
-    <article id="md" class="card markdown" aria-label="ACBP DSL content">Loading…</article>
+    <article id="md" class="card markdown" aria-label="ACBP DSL markdown">Loading…</article>
   </div>
 </div>
 
@@ -84,65 +78,53 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <script>
+async function fetchFirst(urls){
+  for (const u of urls){
+    try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return await r.text(); } catch {}
+  }
+  return '## Error\nFailed to load Markdown.';
+}
 (async function(){
-  const res = await fetch('ACBP-DSL.md');
-  const md = await res.text();
+  const mdText = await fetchFirst([
+    'ACBP-DSL.md',
+    'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/docs/ACBP-DSL.md'
+  ]);
 
   marked.setOptions({ gfm:true, breaks:false, mangle:false, headerIds:true });
-  const html = marked.parse(md);
   const container = document.getElementById('md');
-  container.innerHTML = html;
+  container.innerHTML = marked.parse(mdText);
 
-  const hs = container.querySelectorAll('h1, h2, h3');
-  const items = [];
-  hs.forEach(h => {
-    if (!h.id) {
-      h.id = h.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g,'').replace(/\s+/g,'-');
-    }
+  const hs = container.querySelectorAll('h1, h2, h3'); const items=[];
+  hs.forEach(h=>{
+    if(!h.id) h.id = h.textContent.trim().toLowerCase().replace(/[^\w\- ]+/g,'').replace(/\s+/g,'-');
     h.classList.add('anchored');
-    const a = document.createElement('a');
-    a.href = '#' + h.id; a.className = 'anchor'; a.setAttribute('aria-hidden','true'); a.textContent = '#';
-    h.prepend(a);
-    const lvl = parseInt(h.tagName.substring(1),10);
-    items.push({lvl, id:h.id, text:h.textContent.replace(/^#/, '').trim()});
+    const a=document.createElement('a'); a.href='#'+h.id; a.className='anchor'; a.setAttribute('aria-hidden','true'); a.textContent='#'; h.prepend(a);
+    items.push({lvl:+h.tagName.substring(1), id:h.id, text:h.textContent.replace(/^#/, '').trim()});
+  });
+  const tocBody=document.getElementById('toc-body'); const root=document.createElement('ul'); let stack=[{lvl:items[0]?.lvl||1,ul:root}];
+  items.forEach(it=>{let top=stack.at(-1); while(it.lvl>top.lvl){const ul=document.createElement('ul'); top.ul.lastElementChild?.appendChild(ul); stack.push({lvl:top.lvl+1,ul}); top=stack.at(-1);} while(it.lvl<top.lvl){stack.pop(); top=stack.at(-1);} const li=document.createElement('li'); li.innerHTML=`<a href="#${it.id}">${it.text}</a>`; top.ul.appendChild(li);});
+  tocBody.textContent=''; tocBody.appendChild(root);
+
+  const links=tocBody.querySelectorAll('a'); const map={}; links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
+  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.remove('active')); const a=map[e.target.id]; if(a) a.classList.add('active');}});},{rootMargin:'-40% 0px -55% 0px',threshold:0});
+  hs.forEach(h=>obs.observe(h));
+
+  renderMathInElement(container,{
+    delimiters:[
+      {left:"$$",right:"$$",display:true},
+      {left:"\\[",right:"\\]",display:true},
+      {left:"$",right:"$",display:false},
+      {left:"\\(",right:"\\)",display:false}
+    ], throwOnError:false
   });
 
-  function buildTOC(items){
-    if(!items.length) return '';
-    const root = document.createElement('ul');
-    let stack = [{lvl: items[0].lvl, ul: root}];
-    items.forEach(it => {
-      let top = stack[stack.length-1];
-      while (it.lvl > top.lvl) {
-        const ul = document.createElement('ul');
-        top.ul.lastElementChild?.appendChild(ul);
-        stack.push({lvl: top.lvl+1, ul});
-        top = stack[stack.length-1];
-      }
-      while (it.lvl < top.lvl) { stack.pop(); top = stack[stack.length-1]; }
-      const li = document.createElement('li'); li.innerHTML = `<a href="#${it.id}">${it.text}</a>`; top.ul.appendChild(li);
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',ev=>{
+      const id=a.getAttribute('href').slice(1); const el=document.getElementById(id);
+      if(!el) return; ev.preventDefault(); el.scrollIntoView({behavior:'smooth',block:'start'}); history.replaceState(null,'','#'+id);
     });
-    return root;
-  }
-  const tocDom = buildTOC(items);
-  const tocBody = document.getElementById('toc-body'); tocBody.innerHTML = ''; tocBody.appendChild(tocDom);
-
-  const links = tocBody.querySelectorAll('a'); const map = {}; links.forEach(a => { map[a.getAttribute('href').substring(1)] = a; });
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('active')); const a = map[e.target.id]; if (a) a.classList.add('active'); }});
-  }, {rootMargin: '-40% 0px -55% 0px', threshold: 0});
-  hs.forEach(h => obs.observe(h));
-
-  renderMathInElement(container, {
-    delimiters: [
-      {left: "$$", right: "$$", display: true},
-      {left: "\\[", right: "\\]", display: true},
-      {left: "$", right: "$", display: false},
-      {left: "\\(", right: "\\)", display: false}
-    ], throwOnError: false
   });
-
-  document.getElementById('printBtn').onclick = () => window.print();
+  document.getElementById('printBtn').onclick=()=>window.print();
 })();
 </script>
 </body>
