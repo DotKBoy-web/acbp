@@ -1,3 +1,7 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16888028.svg)](https://doi.org/10.5281/zenodo.16888028)
+[![Pages](https://img.shields.io/badge/site-ACBP%20docs-0b6efd)](https://dotkboy-web.github.io/acbp/)
+[![License](https://img.shields.io/badge/license-DotK%20Proprietary%20NC-6f42c1)](https://dotkboy-web.github.io/acbp/LICENSE.html)
+
 > See also: **[The ACBP Equation](docs/ACBP-Equation.md)** — canonical definition & compiler contract.
 
 # ACBP — Bitmask DSL, Benchmarks & Explorer

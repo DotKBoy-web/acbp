@@ -1,3 +1,4 @@
+<!-- docs/index.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,39 +22,46 @@
   <link rel="canonical" href="https://dotkboy-web.github.io/acbp/">
   <meta name="description" content="ACBP: Al Anazi Categorical-Boolean Paradigm — SQL-native decision rules with equation, proofs, examples, and verified metrics.">
 
+  <!-- Plausible analytics (outbound + file downloads) -->
+  <script defer data-domain="dotkboy-web.github.io/acbp" src="https://plausible.io/js/script.js"></script>
+  <script defer data-domain="dotkboy-web.github.io/acbp" src="https://plausible.io/js/script.outbound-links.js"></script>
+  <script defer data-domain="dotkboy-web.github.io/acbp" src="https://plausible.io/js/script.file-downloads.js"></script>
+
   <style>
     :root {
-      --bg: #0b0f14; --card: #121821; --text: #e7edf4; --muted: #abc0d3;
-      --link: #66b3ff; --accent: #5dd19b; --border: #1e2633;
-      --btn: #1a2230; --btn-h: #212b3a; --code-bg: #0e141b; --chip: #0f1620; --ok: #38d478;
+      --bg:#0b0f14; --card:#121821; --text:#e7edf4; --muted:#abc0d3;
+      --link:#66b3ff; --accent:#5dd19b; --border:#1e2633;
+      --btn:#1a2230; --btn-h:#212b3a; --code-bg:#0e141b; --chip:#0f1620; --ok:#38d478;
     }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"; }
-    a { color:var(--link); text-decoration:none; }
-    a:hover { text-decoration:underline; }
-    .wrap { max-width:980px; margin:40px auto; padding:0 20px; }
-    .hero { display:flex; align-items:center; gap:18px; margin-bottom:20px; }
-    .hero img { width:56px; height:56px; object-fit:contain; filter: drop-shadow(0 6px 18px rgba(93,209,155,.25)); }
-    h1 { font-size:28px; letter-spacing:.2px; margin:0; }
-    p.lead { color:var(--muted); margin:.25rem 0 1.0rem; }
-    .actions { display:flex; flex-wrap:wrap; gap:10px; margin:6px 0 14px; }
-    .btn { display:inline-flex; align-items:center; gap:8px; background:var(--btn); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:8px 12px; text-decoration:none; font-weight:600; }
-    .btn:hover { background:var(--btn-h); text-decoration:none; }
-    .badges { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:2px 0 14px; }
-    .chip { background:var(--chip); border:1px solid var(--border); border-radius:999px; padding:6px 10px; color:var(--muted); font-size:13px; white-space:nowrap; }
-    .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-block:20px 28px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
-    .card h2 { font-size:16px; margin:0 0 10px; letter-spacing:.2px; color:var(--accent); }
-    ul { margin:0; padding-left:18px; } li+li { margin-top:6px; }
-    footer { margin:36px 0 28px; color:var(--muted); display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .gh { display:inline-flex; align-items:center; gap:8px; background:var(--btn); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:6px 10px; text-decoration:none; }
-    .gh:hover { background:var(--btn-h); text-decoration:none; }
-    .sep { opacity:.4; }
-    table { width:100%; border-collapse:collapse; margin-top:6px; }
-    th, td { text-align:left; padding:8px 10px; border-top:1px solid var(--border); }
-    th { color:var(--muted); font-weight:600; }
-    .ok { color:var(--ok); font-weight:600; }
-    .mono { font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; padding:0; background:var(--bg); color:var(--text);
+      font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"; }
+    a { color:var(--link); text-decoration:none; } a:hover{text-decoration:underline;}
+    .wrap{ max-width:980px; margin:40px auto; padding:0 20px; }
+    .hero{ display:flex; align-items:center; gap:18px; margin-bottom:20px; }
+    .hero img{ width:56px; height:56px; object-fit:contain; filter:drop-shadow(0 6px 18px rgba(93,209,155,.25)); }
+    h1{ font-size:28px; letter-spacing:.2px; margin:0; }
+    p.lead{ color:var(--muted); margin:.25rem 0 1.0rem; }
+    .actions{ display:flex; flex-wrap:wrap; gap:10px; margin:6px 0 14px; }
+    .btn{ display:inline-flex; align-items:center; gap:8px; background:var(--btn);
+      border:1px solid var(--border); color:var(--text); border-radius:10px; padding:8px 12px; font-weight:600; }
+    .btn:hover{ background:var(--btn-h); text-decoration:none; }
+    .badges{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:2px 0 14px; }
+    .chip{ background:var(--chip); border:1px solid var(--border); border-radius:999px; padding:6px 10px; color:var(--muted); font-size:13px; white-space:nowrap; }
+    .grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin-block:20px 28px; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
+    .card h2{ font-size:16px; margin:0 0 10px; letter-spacing:.2px; color:var(--accent); }
+    ul{ margin:0; padding-left:18px; } li+li{ margin-top:6px; }
+    table{ width:100%; border-collapse:collapse; margin-top:6px; }
+    th,td{ text-align:left; padding:8px 10px; border-top:1px solid var(--border); }
+    th{ color:var(--muted); font-weight:600; }
+    .ok{ color:var(--ok); font-weight:600; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
+    footer{ margin:36px 0 28px; color:var(--muted); display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .gh{ display:inline-flex; align-items:center; gap:8px; background:var(--btn); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:6px 10px; }
+    .gh:hover{ background:var(--btn-h); text-decoration:none; }
+    .sep{ opacity:.4; }
+    .snap p{ margin:.25rem 0; }
   </style>
 </head>
 <body>
@@ -65,13 +73,11 @@
         <p class="lead">SQL-native decision rules. Equation, proofs, examples, and verified metrics.</p>
 
         <div class="actions" aria-label="Primary actions">
-          <a class="btn" href="https://github.com/DotKBoy-web/acbp/releases/latest" target="_blank" rel="noopener">
-            <!-- download icon -->
+          <a class="btn" href="https://github.com/DotKBoy-web/acbp/releases/latest" target="_blank" rel="noopener" aria-label="Latest release">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M7.25 1.5a.75.75 0 0 1 1.5 0v6.19l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3A.75.75 0 1 1 5.53 5.97L7.25 7.7V1.5Z"></path><path d="M3 10.5a.75.75 0 0 1 .75.75v1A1.75 1.75 0 0 0 5.5 14h5a1.75 1.75 0 0 0 1.75-1.75v-1a.75.75 0 0 1 1.5 0v1A3.25 3.25 0 0 1 10.5 16h-5A3.25 3.25 0 0 1 2.25 12.25v-1A.75.75 0 0 1 3 10.5Z"></path></svg>
             Latest release
           </a>
           <a class="btn" href="https://github.com/DotKBoy-web/acbp" target="_blank" rel="noopener" aria-label="Repository on GitHub">
-            <!-- GH mark -->
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59.55.38 0 0 0 .55-.38c0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.2 1.87.86 2.33.65.07-.52.28-.86.51-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
             GitHub
           </a>
@@ -87,6 +93,16 @@
         </div>
       </div>
     </header>
+
+    <!-- Performance snapshot (your “money lines”) -->
+    <section class="card snap" aria-label="Performance snapshot">
+      <h2>Performance snapshot (sim)</h2>
+      <p><strong>Clinic model:</strong> <span class="mono">P50 ≈ 818 ms</span>, <span class="mono">P95 ≈ 937 ms</span> (<span class="mono">n=1,680</span>)</p>
+      <p><strong>Inpatient model:</strong> <span class="mono">P50 ≈ 614 ms</span>, <span class="mono">P95 ≈ 750 ms</span> (<span class="mono">n=1,680</span>)</p>
+      <p><strong>Daily SLO:</strong> Clinic ≥ 95% under 920 ms across days; Inpatient ~83–91% under 700 ms (Wilson 95% lower bounds shown in app)</p>
+      <p class="lead">That’s compelling for live dashboards—supports <em>logic @ the speed of thought</em> without overclaiming.</p>
+      <p>Live demo (sim data): <code>streamlit run scripts/dashboard_app.py</code></p>
+    </section>
 
     <section class="grid" aria-label="Docs and examples">
       <div class="card">

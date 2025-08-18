@@ -7,3 +7,12 @@ __pycache__/
 .idea/
 .vscode/
 .pytest_cache/
+.venv/
+.streamlit/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+> sql/*.tmp
+> scripts/*.tmp
