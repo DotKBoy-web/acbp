@@ -1,3 +1,8 @@
+---
+layout: default
+title: ACBP — Equation (Canonical)
+---
+
 # The ACBP Equation (canonical)
 
 **Objects.**
