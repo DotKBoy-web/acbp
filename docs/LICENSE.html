@@ -33,7 +33,7 @@
 
   <div class="row">
     <a class="btn" href="/acbp/">Home</a>
-    <a class="btn" href="/acbp/docs/index.html">Docs index</a>
+    <a class="btn" href="/acbp/index.html">Docs index</a>
     <a class="btn" href="/acbp/LICENSE" download>Download</a>
     <a class="btn" href="https://github.com/DotKBoy-web/acbp/blob/master/LICENSE" target="_blank" rel="noopener">View on GitHub</a>
     <button id="copy" class="btn" type="button">Copy</button>
@@ -46,7 +46,7 @@
 
 <script>
 (async function(){
-  const res = await fetch('../LICENSE'); // relative to /docs/
+  const url = 'https://raw.githubusercontent.com/DotKBoy-web/acbp/master/LICENSE';
   const txt = await res.text();
   const el  = document.getElementById('code');
   el.textContent = txt;
