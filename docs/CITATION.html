@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACBP — CITATION.cff</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/acbp/ACBP_Logo.png">
+<meta name="theme-color" content="#0b0f14">
+<style>
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#abc0d3;--link:#66b3ff;--card:#121821;--border:#1e2633;--code:#0e141b}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  a{color:var(--link)} a:hover{text-decoration:none}
+  .wrap{max-width:880px;margin:40px auto;padding:0 20px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  header img{width:40px;height:40px;object-fit:contain}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  pre,code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;margin:0}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:#1a2230;border:1px solid var(--border);border-radius:10px;padding:6px 10px;color:var(--text);text-decoration:none}
+  .btn:hover{background:#212b3a}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
+    <div>
+      <h1 style="margin:0">CITATION.cff</h1>
+      <div style="color:var(--mut)">Rendered from <code>/CITATION.cff</code></div>
+    </div>
+  </header>
+
+  <div class="row">
+    <a class="btn" href="/acbp/">Home</a>
+    <a class="btn" href="/acbp/docs/index.html">Docs index</a>
+    <a class="btn" href="/acbp/CITATION.cff" download>Download</a>
+    <a class="btn" href="https://github.com/DotKBoy-web/acbp/blob/master/CITATION.cff" target="_blank" rel="noopener">View on GitHub</a>
+    <button id="copy" class="btn" type="button">Copy</button>
+  </div>
+
+  <article class="card">
+    <pre id="code" aria-label="CITATION.cff content">Loading…</pre>
+  </article>
+</div>
+
+<script>
+(async function(){
+  const res = await fetch('../CITATION.cff'); // relative to /docs/
+  const txt = await res.text();
+  const el  = document.getElementById('code');
+  el.textContent = txt;
+  document.getElementById('copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(txt); event.target.textContent='Copied!'; setTimeout(()=>event.target.textContent='Copy',1200); }
+    catch { const r=document.createRange(); r.selectNodeContents(el); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+  };
+})();
+</script>
+</body>
+</html>
