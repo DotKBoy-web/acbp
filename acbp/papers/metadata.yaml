@@ -1,0 +1,11 @@
+paperseries: "ACBP Whitepapers"
+geometry: margin=1in
+fontsize: 11pt
+links-as-notes: false
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+toc: true
+toc-depth: 2
+header-includes:
+  - \usepackage{amsmath}

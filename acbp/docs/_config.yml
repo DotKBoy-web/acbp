@@ -1,0 +1,6 @@
+baseurl: "/acbp"
+title: "ACBP"
+theme: minima
+markdown: kramdown
+kramdown:
+  input: GFM

@@ -1,0 +1,20 @@
+Model: inpatient_admission
+  B (flags):       6
+  B_eff (reduced): 6
+  n_eff (cats):    24192
+  Complexity:      2^6 * 24192
+  Valid masks enumerated (bit-only): 12 / 64
+  First few: [0, 1, 3, 4, 5, 7, 11, 15, 19, 23, 35, 39]
+
+=== Sanity estimates (uniform, independent categories; FORBID_WHEN only) ===
+  Flag prevalence among valid masks: booked=83.3%, checked_in=66.7%, in_icu=50.0%, discharged=16.7%, expired=16.7%, transferred=16.7%
+  Theoretical max rows (bit-only):   290,304
+  Est. remaining rows (cat rules):   134,606  (~46.4% of max)
+  Est. pruned rows (cat rules):      155,698
+  note: Applied FORBID_WHEN estimates: booked@33.33%; in_icu@25.00%; in_icu@25.00%; in_icu@25.00%; discharged@25.00%.
+
+=== Actuals (latest summary) ===
+  Decision rows: 126,000  (~43.4% of theoretical; pruned 164,304)
+  Present-only rows: 50,000
+  Data rows: 50,000
+  Source: papers/results/20250817T161434Z/inpatient_admission/summary.csv

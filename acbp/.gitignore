@@ -1,0 +1,18 @@
+# Python / venv
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated artifacts
+*_present_mat.csv
+_uploaded_*.json
+.streamlit/secrets.toml

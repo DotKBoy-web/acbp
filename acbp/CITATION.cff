@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: "ACBP: Al Anazi Categorical-Boolean Paradigm (DSL + SQL compiler)"
+message: "Please cite this software and DSL spec."
+authors:
+  - family-names: "Al Anazi"
+    given-names: "Muteb Hail S."
+identifiers:
+  - type: url
+    value: https://github.com/DotKBoy-web/acbp
+  - type: url
+    value: https://dotkboy-web.github.io/acbp/
+version: "v0.3.0"
+date-released: "2025-08-17"
+repository-code: "https://github.com/DotKBoy-web/acbp"
+keywords: [ "DSL", "PostgreSQL", "decision rules", "bitmask", "materialized-views", "deterministic-systems" ]

@@ -1,0 +1,13 @@
+group_obj,visits
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Mon"", ""age_group"": ""Adult"", ""admit_hour"": ""04:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""ED""}",10
+"{""site"": ""Main"", ""ward"": ""Surgical"", ""payer"": ""Public"", ""weekday"": ""Sat"", ""age_group"": ""Peds"", ""admit_hour"": ""20:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",9
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Mon"", ""age_group"": ""Adult"", ""admit_hour"": ""04:00"", ""admission_type"": ""Emergency"", ""arrival_source"": ""Transfer""}",9
+"{""site"": ""Main"", ""ward"": ""Surgical"", ""payer"": ""SelfPay"", ""weekday"": ""Fri"", ""age_group"": ""Adult"", ""admit_hour"": ""00:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Clinic""}",8
+"{""site"": ""Annex"", ""ward"": ""Surgical"", ""payer"": ""SelfPay"", ""weekday"": ""Wed"", ""age_group"": ""Peds"", ""admit_hour"": ""20:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Direct""}",8
+"{""site"": ""Main"", ""ward"": ""StepDown"", ""payer"": ""SelfPay"", ""weekday"": ""Thu"", ""age_group"": ""Adult"", ""admit_hour"": ""04:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Transfer""}",8
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Sun"", ""age_group"": ""Peds"", ""admit_hour"": ""08:00"", ""admission_type"": ""Emergency"", ""arrival_source"": ""Clinic""}",8
+"{""site"": ""Main"", ""ward"": ""Surgical"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Peds"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Transfer""}",8
+"{""site"": ""Annex"", ""ward"": ""StepDown"", ""payer"": ""Private"", ""weekday"": ""Mon"", ""age_group"": ""Adult"", ""admit_hour"": ""20:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",8
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""Public"", ""weekday"": ""Sat"", ""age_group"": ""Peds"", ""admit_hour"": ""00:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",8
+"{""site"": ""Main"", ""ward"": ""Surgical"", ""payer"": ""Public"", ""weekday"": ""Fri"", ""age_group"": ""Peds"", ""admit_hour"": ""12:00"", ""admission_type"": ""Emergency"", ""arrival_source"": ""Transfer""}",8
+"{""site"": ""Annex"", ""ward"": ""StepDown"", ""payer"": ""Public"", ""weekday"": ""Mon"", ""age_group"": ""Peds"", ""admit_hour"": ""20:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",7

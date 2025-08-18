@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://dotkboy.github.io/acbp/schema/v0/acbp.schema.json",
+  "title": "ACBP DSL v0 (legacy)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "flags", "categories", "constraints"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$id": { "type": "string" },
+    "dsl_version": { "type": "string" },
+
+    "name": { "type": "string", "minLength": 1 },
+
+    "flags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+
+    "categories": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "title": "IMPLIES",
+            "properties": {
+              "type": { "const": "IMPLIES" },
+              "a": { "type": "string", "minLength": 1 },
+              "b": { "type": "string", "minLength": 1 }
+            },
+            "required": ["type", "a", "b"],
+            "additionalProperties": false
+          },
+          {
+            "title": "MUTEX",
+            "properties": {
+              "type": { "const": "MUTEX" },
+              "a": { "type": "string", "minLength": 1 },
+              "b": { "type": "string", "minLength": 1 }
+            },
+            "required": ["type", "a", "b"],
+            "additionalProperties": false
+          },
+          {
+            "title": "FORBID_IF_SQL",
+            "properties": {
+              "type": { "const": "FORBID_IF_SQL" },
+              "condition": { "type": "string", "minLength": 1 },
+              "if_flag": { "type": "string", "minLength": 1 }
+            },
+            "required": ["type", "condition", "if_flag"],
+            "additionalProperties": false
+          },
+          {
+            "title": "FORBID_WHEN",
+            "description": "Forbid if a flag is set AND the categories match the given equals/IN filter.",
+            "properties": {
+              "type": { "const": "FORBID_WHEN" },
+              "if_flag": { "type": "string", "minLength": 1 },
+              "when": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "anyOf": [
+                    { "type": "string" },
+                    {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": { "type": "string" }
+                    }
+                  ]
+                }
+              }
+            },
+            "required": ["type", "if_flag", "when"],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+
+    "enumeration_limit_bits": { "type": "integer", "minimum": 1 }
+  }
+}

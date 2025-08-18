@@ -1,0 +1,13 @@
+k1,k2,cnt
+FollowUp,Main,4507
+FollowUp,Downtown,4347
+FollowUp,Annex,3667
+Urgent,Main,3504
+Procedure,Downtown,3475
+Urgent,Downtown,3444
+Procedure,Main,3420
+NewPatient,Main,3418
+NewPatient,Downtown,3361
+NewPatient,Annex,3159
+Urgent,Annex,3073
+Procedure,Annex,3056

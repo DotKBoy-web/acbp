@@ -1,0 +1,32 @@
+name: ci
+on:
+  push: { branches: ["main"] }
+  pull_request: {}
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install black ruff
+      - name: Lint (Black/Ruff)
+        run: |
+          ruff check . || true
+          black --check . || true
+      - name: JSON sanity (examples)
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          ok=True
+          for p in pathlib.Path("examples").rglob("*.json"):
+              try:
+                  json.load(open(p))
+              except Exception as e:
+                  ok=False; print(f"Invalid JSON: {p}: {e}")
+          sys.exit(0 if ok else 1)
+          PY

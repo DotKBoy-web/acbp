@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: LicenseRef-DotK-Proprietary-NC-1.0
+# Copyright (c) 2025 DotK (Muteb Hail S Al Anazi)
+version: "3.8"
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: acbp-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acbp}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    ports:
+      - "${HOST_PORT:-5434}:5432"
+    volumes:
+      - acbp-data:/var/lib/postgresql/data
+volumes:
+  acbp-data:

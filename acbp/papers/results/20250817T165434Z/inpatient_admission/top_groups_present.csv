@@ -1,0 +1,13 @@
+group_obj,visits
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""SelfPay"", ""weekday"": ""Fri"", ""age_group"": ""Peds"", ""admit_hour"": ""16:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",11
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Adult"", ""admit_hour"": ""08:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Clinic""}",11
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""SelfPay"", ""weekday"": ""Sat"", ""age_group"": ""Peds"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",10
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""SelfPay"", ""weekday"": ""Fri"", ""age_group"": ""Peds"", ""admit_hour"": ""12:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Direct""}",10
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Mon"", ""age_group"": ""Adult"", ""admit_hour"": ""16:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",10
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Peds"", ""admit_hour"": ""16:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",10
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Fri"", ""age_group"": ""Adult"", ""admit_hour"": ""16:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""ED""}",10
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""SelfPay"", ""weekday"": ""Sat"", ""age_group"": ""Adult"", ""admit_hour"": ""00:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",10
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Private"", ""weekday"": ""Wed"", ""age_group"": ""Adult"", ""admit_hour"": ""00:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",10
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""Public"", ""weekday"": ""Fri"", ""age_group"": ""Peds"", ""admit_hour"": ""04:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""ED""}",10
+"{""site"": ""Main"", ""ward"": ""ICU"", ""payer"": ""Public"", ""weekday"": ""Thu"", ""age_group"": ""Adult"", ""admit_hour"": ""12:00"", ""admission_type"": ""Elective"", ""arrival_source"": ""Direct""}",10
+"{""site"": ""Annex"", ""ward"": ""ICU"", ""payer"": ""SelfPay"", ""weekday"": ""Tue"", ""age_group"": ""Peds"", ""admit_hour"": ""08:00"", ""admission_type"": ""Transfer"", ""arrival_source"": ""Direct""}",10

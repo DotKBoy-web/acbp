@@ -1,0 +1,37 @@
+{
+  "$schema": "https://dotkboy-web.github.io/acbp/schema/v0/acbp.schema.json",
+  "$id": "https://dotkboy-web.github.io/acbp/models/clinic_visit.v0.json",
+  "dsl_version": "v0",
+  "name": "clinic_visit",
+  "flags": ["booked","checked_in","seen_by_doctor","canceled","rescheduled"],
+  "categories": {
+    "appt_type": ["NewPatient","FollowUp","Urgent","Procedure","Teleconsult"],
+    "site": ["Main","Annex","Downtown"],
+    "age_group": ["Peds","Adult","Geriatric"],
+    "department": ["General","Cardiology","Orthopedics","Imaging","Pediatrics"],
+    "provider_role": ["Attending","Resident","NP/PA"],
+    "modality": ["InPerson","Virtual"],
+    "visit_hour": ["08:00","09:00","10:00","11:00","14:00"],
+    "weekday": ["Mon","Tue","Wed","Thu","Fri"],
+    "insurance": ["SelfPay","Private","Government"]
+  },
+  "constraints": [
+    {"type":"IMPLIES","a":"checked_in","b":"booked"},
+    {"type":"IMPLIES","a":"seen_by_doctor","b":"checked_in"},
+    {"type":"IMPLIES","a":"rescheduled","b":"booked"},
+    {"type":"IMPLIES","a":"canceled","b":"booked"},
+
+    {"type":"MUTEX","a":"canceled","b":"checked_in"},
+    {"type":"MUTEX","a":"canceled","b":"rescheduled"},
+    {"type":"MUTEX","a":"rescheduled","b":"checked_in"},
+    {"type":"MUTEX","a":"rescheduled","b":"seen_by_doctor"},
+
+    { "type":"FORBID_WHEN", "if_flag":"booked", "when":{"modality":"Virtual","department":["Imaging","Orthopedics"]} },
+    { "type":"FORBID_IF_SQL", "condition":"(appt_type = 'Teleconsult' AND modality <> 'Virtual')", "if_flag":"booked" },
+    { "type":"FORBID_IF_SQL", "condition":"(modality = 'Virtual' AND appt_type NOT IN ('FollowUp','Teleconsult'))", "if_flag":"booked" },
+    { "type":"FORBID_IF_SQL", "condition":"(visit_hour NOT IN ('09:00','10:00','11:00','14:00'))", "if_flag":"seen_by_doctor" },
+    { "type":"FORBID_WHEN",   "if_flag":"booked", "when":{"site":"Annex","department":"Cardiology"} },
+    { "type":"FORBID_IF_SQL", "condition":"(department = 'Pediatrics' AND age_group <> 'Peds')", "if_flag":"booked" }
+  ],
+  "enumeration_limit_bits": 22
+}
