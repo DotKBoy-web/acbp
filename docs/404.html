@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Not found — ACBP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/acbp/ACBP_Logo.png">
+<style>
+  body{margin:0;background:#0b0f14;color:#e7edf4;font:16px/1.6 system-ui}
+  .wrap{max-width:800px;margin:12vh auto;padding:0 20px}
+  a{color:#66b3ff}
+  .card{background:#121821;border:1px solid #1e2633;border-radius:12px;padding:18px}
+</style>
+<div class="wrap">
+  <h1>404 — File not found</h1>
+  <div class="card" id="msg">Trying to help…</div>
+  <p><a href="/acbp/">Go to ACBP home</a></p>
+</div>
+<script>
+(function(){
+  const p = location.pathname;
+  // If the path contains /docs/, strip it and retry
+  const i = p.indexOf('/docs/');
+  if (i >= 0) {
+    const fixed = p.replace('/docs/', '/');
+    document.getElementById('msg').innerHTML =
+      `Detected legacy URL. Redirecting to <code>${fixed}</code> …`;
+    location.replace(fixed + location.search + location.hash);
+    return;
+  }
+  document.getElementById('msg').innerHTML =
+    `No page at <code>${p}</code>. Check filename and case, or return to the <a href="/acbp/">home page</a>.`;
+})();
+</script>
