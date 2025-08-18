@@ -1,7 +1,3 @@
----
-layout: default
-title: ACBP DSL — Specification
----
 
 > See also: **[The ACBP Equation](docs/ACBP-Equation.md)** — canonical definition & compiler contract.
 
