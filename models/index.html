@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACBP — Models</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/acbp/ACBP_Logo.png">
+<meta name="theme-color" content="#0b0f14">
+<style>
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#abc0d3;--link:#66b3ff;--card:#121821;--border:#1e2633}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui}
+  a{color:var(--link)} a:hover{text-decoration:none}
+  .wrap{max-width:880px;margin:40px auto;padding:0 20px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  header img{width:40px;height:40px;object-fit:contain}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  ul{margin:0;padding-left:18px}
+  li+li{margin-top:6px}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
+    <div>
+      <h1 style="margin:0">ACBP — Models</h1>
+      <div style="color:var(--mut)">Static list. Edit the array below to add files.</div>
+    </div>
+  </header>
+
+  <nav class="card">
+    <a href="/acbp/docs/index.html">← Docs index</a>
+    <span style="opacity:.5">·</span>
+    <a href="/acbp/">Home</a>
+  </nav>
+
+  <section class="card">
+    <ul id="list"></ul>
+  </section>
+</div>
+
+<script>
+const files = [
+  { name: "clinic_visit.v0.json", href: "/acbp/models/clinic_visit.v0.json" },
+  { name: "inpatient_admission.v0.json", href: "/acbp/models/inpatient_admission.v0.json" },
+];
+const ul = document.getElementById('list');
+files.forEach(f=>{
+  const li=document.createElement('li');
+  li.innerHTML = `<a href="${f.href}">${f.name}</a> <span style="opacity:.6">·</span> <a href="https://raw.githubusercontent.com/DotKBoy-web/acbp/master${f.href.replace('/acbp','')}" target="_blank" rel="noopener">raw</a>`;
+  ul.appendChild(li);
+});
+</script>
+</body>
+</html>

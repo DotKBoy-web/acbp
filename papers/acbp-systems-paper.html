@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACBP — Systems Paper (PDF Viewer)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/acbp/ACBP_Logo.png">
+<meta name="theme-color" content="#0b0f14">
+<style>
+  html,body{margin:0;height:100%;background:#0b0f14;color:#e7edf4;font:16px/1.6 system-ui}
+  header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#121821;border-bottom:1px solid #1e2633}
+  header img{width:28px;height:28px;object-fit:contain}
+  a{color:#66b3ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .viewer{position:fixed;top:50px;left:0;right:0;bottom:0}
+  iframe{width:100%;height:100%;border:0;background:#0b0f14}
+</style>
+</head>
+<body>
+<header>
+  <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
+  <div style="display:flex;gap:10px;align-items:center">
+    <strong>ACBP — Systems Paper</strong>
+    <span style="opacity:.6">|</span>
+    <a href="/acbp/">Home</a>
+    <span style="opacity:.6">·</span>
+    <a href="/acbp/papers/acbp-systems-paper.pdf" download>Download PDF</a>
+  </div>
+</header>
+<div class="viewer" role="document" aria-label="PDF viewer">
+  <iframe src="acbp-systems-paper.pdf#view=FitH" title="ACBP Systems Paper PDF"></iframe>
+</div>
+</body>
+</html>

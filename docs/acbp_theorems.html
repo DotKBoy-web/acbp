@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACBP — Theorems & Proofs (Verified)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/acbp/ACBP_Logo.png">
+<meta name="theme-color" content="#0b0f14">
+<style>
+  :root{--bg:#0b0f14;--text:#e7edf4;--mut:#abc0d3;--link:#66b3ff;--card:#121821;--border:#1e2633}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  a{color:var(--link)} a:hover{text-decoration:none}
+  .wrap{max-width:880px;margin:40px auto;padding:0 20px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  header img{width:40px;height:40px;object-fit:contain}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  #md{margin-top:16px}
+  pre,code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre{background:#0e141b;border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/acbp/ACBP_Logo.png" alt="ACBP logo">
+    <div>
+      <h1 style="margin:0">ACBP — Theorems & Proofs</h1>
+      <div style="color:var(--mut)">Rendered from <code>docs/acbp_theorems.md</code></div>
+    </div>
+  </header>
+
+  <nav class="card">
+    <a href="/acbp/docs/index.html">← Docs index</a>
+    <span style="opacity:.5">·</span>
+    <a href="/acbp/">Home</a>
+  </nav>
+
+  <article id="md" class="card" aria-label="ACBP theorems markdown"></article>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+(async function(){
+  const res = await fetch('acbp_theorems.md'); // relative to this file
+  const md = await res.text();
+  marked.setOptions({ mangle:false, headerIds:true });
+  document.getElementById('md').innerHTML = marked.parse(md);
+})();
+</script>
+</body>
+</html>
